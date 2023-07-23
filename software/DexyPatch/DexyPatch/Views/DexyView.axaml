@@ -1,0 +1,48 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="600"
+             x:Class="Dexy.DexyPatch.Views.DexyView">
+	<DockPanel>
+		<TextBlock DockPanel.Dock="Top"
+				   Height="25"
+				   FontSize="18"
+				   FontWeight="Bold">
+			Dexy Module
+		</TextBlock>
+		<StackPanel DockPanel.Dock="Top"
+					Orientation="Horizontal"
+					Spacing="5"
+					Margin="0,5,0,5">
+			<TextBlock Text="{Binding DexyConnection}" VerticalAlignment="Center"/>
+			<Button Content="Settings" Command="{Binding ShowHideSettings}">
+				<ToolTip.Tip>Show/hide connection settings</ToolTip.Tip>
+				<PathIcon Data="{StaticResource settings_regular}"/>
+			</Button>
+			<Button Content="Reboot" Command="{Binding RebootCommand}">
+				<ToolTip.Tip>Reboot the Dexy module</ToolTip.Tip>
+				<PathIcon Data="{StaticResource wrench_regular}"/>
+			</Button>
+			<Button Content="Download" Command="{Binding DownloadFirmwareCommand}">
+				<ToolTip.Tip>Download firmware to Dexy</ToolTip.Tip>
+				<PathIcon Data="{StaticResource arrow_download_regular}"/>
+			</Button>
+		</StackPanel>
+		<StackPanel DockPanel.Dock="Top"
+					Orientation="Horizontal"
+					Spacing="5"
+					Margin="0,0,0,5">
+			<TextBlock IsVisible="{Binding IsDexyConnected}">Firmware version</TextBlock>
+			<TextBlock Text="{Binding FirmwareVersion}"/>
+		</StackPanel>
+		<ContentControl DockPanel.Dock="Top" Content="{Binding DexySettingsVM}"/> <!-- will create a DexySettingsView -->
+		<TextBlock DockPanel.Dock="Top">Dexy output:</TextBlock>
+		<ScrollViewer Name="serialTextLogScroller" Width="280" Margin="0,5,0,0">
+			<TextBox Text="{Binding SerialTextLog}"
+					 IsReadOnly="True"
+					 TextWrapping="Wrap"
+					 Background="#2C2C2C"/>
+		</ScrollViewer>
+	</DockPanel>
+</UserControl>

@@ -1,0 +1,56 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Dexy.DexyPatch.Views.PatchBankView">
+	<DockPanel Margin="8,0,10,10">
+		<!-- Buttons to manipulate the patches in the patchbank -->
+		<RelativePanel DockPanel.Dock="Left" Width="44">
+			<Button Name="btnMoveUp"
+					Command="{Binding MovePatchUpCommand}"
+					RelativePanel.Below="btnPlayPatch"
+					Margin="0,40,0,3">
+				<ToolTip.Tip>Move down</ToolTip.Tip>
+				<PathIcon Data="{StaticResource arrow_up_regular}" />
+			</Button>
+			<Button Name="btnMoveDown"
+					Command="{Binding MovePatchDownCommand}"
+					RelativePanel.Below="btnMoveUp"
+					Margin="0,3,0,3">
+				<ToolTip.Tip>Move down</ToolTip.Tip>
+				<PathIcon Data="{StaticResource arrow_down_regular}" />
+			</Button>
+			<Button Name="btnInitializePatch"
+					Command="{Binding InitializePatchCommand}"
+					RelativePanel.Below="btnMoveDown"
+					Margin="0,20,0,3">
+				<ToolTip.Tip>Initialize patch</ToolTip.Tip>
+				<PathIcon Data="{StaticResource new_regular}" />
+			</Button>
+			<Button Name="btnCopyPatch"
+					Command="{Binding CopyPatchCommand}"
+					RelativePanel.Below="btnInitializePatch"
+					Margin="0,3,0,3">
+				<ToolTip.Tip>Copy patch</ToolTip.Tip>
+				<PathIcon Data="{StaticResource copy_regular}" />
+			</Button>
+			<Button Name="btnPastePatch"
+					Command="{Binding PastePatchCommand}"
+					RelativePanel.Below="btnCopyPatch"
+					Margin="0,3,0,3">
+				<ToolTip.Tip>Paste patch</ToolTip.Tip>
+				<PathIcon Data="{StaticResource clipboard_paste_regular}" />
+			</Button>
+		</RelativePanel>
+		<!-- List of patches in the patchbank -->
+		<ListBox Name="patchListBox"
+				 DockPanel.Dock="Left"
+				 Items="{Binding PatchList}"
+				 SelectedIndex="{Binding SelectedPatch}"
+				 SelectionMode="Single"
+				 Width="150"/>
+		<!-- The selected patch -->
+		<ContentControl Content="{Binding PatchVM}"/> <!-- will create a PatchView -->
+	</DockPanel>
+</UserControl>

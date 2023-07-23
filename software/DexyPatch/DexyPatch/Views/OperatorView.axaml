@@ -1,0 +1,198 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:ctrls="using:Dexy.DexyPatch.Controls"
+             mc:Ignorable="d" d:DesignWidth="835" d:DesignHeight="400"
+             x:Class="Dexy.DexyPatch.Views.OperatorView">
+	<Panel Margin="10">
+		<StackPanel Orientation="Horizontal">
+			<StackPanel Margin="0,0,5,5" MinWidth="160">
+				<Image Source="{Binding OpNumIcon}"
+					   Width="24" Height="24"
+					   VerticalAlignment="Top" HorizontalAlignment="Left"/>
+				<StackPanel Orientation="Horizontal" Spacing="5">
+					<TextBlock VerticalAlignment="Center">Frequency</TextBlock>
+					<ComboBox SelectedIndex="{Binding IsFixedFreq}">
+						<ComboBoxItem>Ratio</ComboBoxItem>
+						<ComboBoxItem>Fixed</ComboBoxItem>
+					</ComboBox>
+				</StackPanel>
+				<!-- Fixed pitch controls -->
+				<StackPanel IsVisible="{Binding IsFixedFreq}" Spacing="5">
+					<TextBlock Text="{Binding FixedFreqString}"/>
+					<StackPanel Orientation="Horizontal" Spacing="5">
+						<Slider Value="{Binding FixedCoarse}"
+								Minimum="0"
+								Maximum="127"
+								TickFrequency="16"
+								TickPlacement="Outside"
+								Orientation="Vertical"
+								Height="128"/>
+						<Slider Value="{Binding FixedFine}"
+								Minimum="-128"
+								Maximum="127"
+								TickFrequency="64"
+								TickPlacement="Outside"
+								Orientation="Vertical"
+								Height="128"/>
+					</StackPanel>
+				</StackPanel>
+				<!-- Ratio controls -->
+				<StackPanel IsVisible="{Binding !IsFixedFreq}" Spacing="5">
+					<TextBlock Text="{Binding RatioString}"/>
+					<StackPanel Orientation="Horizontal" Spacing="5">
+						<Slider Value="{Binding RatioCoarse}"
+								Minimum="0"
+								Maximum="31"
+								TickFrequency="4"
+								TickPlacement="Outside"
+								Orientation="Vertical"
+								Height="128"/>
+						<Slider Value="{Binding RatioFine}"
+								Minimum="-64"
+								Maximum="63"
+								TickFrequency="32"
+								TickPlacement="Outside"
+								Orientation="Vertical"
+								Height="128"/>
+						<Slider Value="{Binding RatioDetune}"
+								Minimum="-8"
+								Maximum="7"
+								Ticks="-8,0,7"
+								TickPlacement="Outside"
+								Orientation="Vertical"
+								Height="128"/>
+					</StackPanel>
+				</StackPanel>
+			</StackPanel>
+
+			<Rectangle Height="190" Width="1" Fill="#55888888"/>
+
+			<!-- Level controls -->
+			<StackPanel>
+				<CheckBox Content="Mute"
+						  IsChecked="{Binding IsMuted}"
+						  DockPanel.Dock="Left"
+						  Margin="5,0,0,2"/>
+				<StackPanel Orientation="Horizontal">
+					<StackPanel IsEnabled="{Binding !IsMuted}" Spacing="5" Margin="5,0,5,5">
+						<TextBlock Foreground="{Binding OutputTextColour}" HorizontalAlignment="Center">Level</TextBlock>
+						<TextBlock Text="{Binding OutputLevel}" Foreground="{Binding OutputTextColour}" HorizontalAlignment="Center"/>
+						<ctrls:ParamSlider Value="{Binding OutputLevel}" HorizontalAlignment="Center"/>
+					</StackPanel>
+					<StackPanel IsEnabled="{Binding !IsMuted}" Spacing="5" Margin="5,0,5,5">
+						<TextBlock Foreground="{Binding OutputTextColour}" HorizontalAlignment="Center">Mod Sens</TextBlock>
+						<TextBlock Text="{Binding ModSens}" Foreground="{Binding OutputTextColour}" HorizontalAlignment="Center"/>
+						<ctrls:ParamSlider Value="{Binding ModSens}" HorizontalAlignment="Center"/>
+					</StackPanel>
+				</StackPanel>
+			</StackPanel>
+
+			<Rectangle Height="190" Width="1" Fill="#55888888"/>
+
+			<!-- Envelope controls -->
+			<StackPanel Margin="5,0,5,0">
+				<DockPanel >
+					<CheckBox Content="Envelope"
+							  IsChecked="{Binding UseEnvelope}"
+							  IsEnabled="{Binding !IsMuted}"
+							  DockPanel.Dock="Left"
+							  Margin="0,0,0,2"/>
+					<ToggleButton IsChecked="{Binding LoopEnvelope}"
+								  IsEnabled="{Binding IsEnvEnabled}"
+								  DockPanel.Dock="Right" HorizontalAlignment="Right">
+						<ToolTip.Tip>Loop envelope</ToolTip.Tip>
+						<Panel>
+							<PathIcon IsVisible="{Binding LoopEnvelope}"
+									  Data="{StaticResource loop_on_regular}"
+									  Height="16" Width="16"/>
+							<PathIcon IsVisible="{Binding !LoopEnvelope}"
+									  Data="{StaticResource loop_off_regular}"
+									  Height="16" Width="16"/>
+						</Panel>
+					</ToggleButton>
+				</DockPanel>
+				<Panel>
+					<ctrls:EnvelopePic Delay="{Binding Delay}" Attack="{Binding Attack}" Decay="{Binding Decay}"
+									   Sustain="{Binding Sustain}" Release="{Binding Release}" Loop="{Binding LoopEnvelope}"
+									   Stroke="{Binding EnvStrokeColour}" StrokeThickness="1"
+									   Margin="0,57,0,9"/>
+					<StackPanel IsVisible="True" Orientation="Horizontal" Spacing="5">
+						<StackPanel IsEnabled="{Binding IsEnvEnabled}" Spacing="5">
+							<TextBlock Foreground="{Binding	EnvTextColour}" HorizontalAlignment="Center">Delay</TextBlock>
+							<TextBlock Text="{Binding Delay}" Foreground="{Binding EnvTextColour}" HorizontalAlignment="Center"/>
+							<ctrls:ParamSlider Value="{Binding Delay}" HorizontalAlignment="Center"/>
+						</StackPanel>
+						<StackPanel IsEnabled="{Binding IsEnvEnabled}" Spacing="5">
+							<TextBlock Foreground="{Binding	EnvTextColour}" HorizontalAlignment="Center">Attack</TextBlock>
+							<TextBlock Text="{Binding Attack}" Foreground="{Binding	EnvTextColour}" HorizontalAlignment="Center"/>
+							<ctrls:ParamSlider Value="{Binding Attack}" HorizontalAlignment="Center"/>
+						</StackPanel>
+						<StackPanel IsEnabled="{Binding IsEnvEnabled}" Spacing="5">
+							<TextBlock Foreground="{Binding	EnvTextColour}" HorizontalAlignment="Center">Decay</TextBlock>
+							<TextBlock Text="{Binding Decay}" Foreground="{Binding	EnvTextColour}" HorizontalAlignment="Center"/>
+							<ctrls:ParamSlider Value="{Binding Decay}" HorizontalAlignment="Center"/>
+						</StackPanel>
+						<StackPanel IsEnabled="{Binding IsEnvEnabled}" Spacing="5">
+							<TextBlock Foreground="{Binding	EnvTextColour}" HorizontalAlignment="Center">Sustain</TextBlock>
+							<TextBlock Text="{Binding Sustain}" Foreground="{Binding	EnvTextColour}" HorizontalAlignment="Center"/>
+							<ctrls:ParamSlider Value="{Binding Sustain}" HorizontalAlignment="Center"/>
+						</StackPanel>
+						<StackPanel IsEnabled="{Binding IsEnvEnabled}" Spacing="5">
+							<TextBlock Foreground="{Binding	EnvTextColour}" HorizontalAlignment="Center">Release</TextBlock>
+							<TextBlock Text="{Binding Release}" Foreground="{Binding	EnvTextColour}" HorizontalAlignment="Center"/>
+							<ctrls:ParamSlider Value="{Binding Release}" HorizontalAlignment="Center"/>
+						</StackPanel>
+					</StackPanel>
+				</Panel>
+			</StackPanel>
+
+			<!-- TODO
+			<Rectangle Height="190" Width="1" Fill="#55888888"/>
+
+			// Scaling controls
+			<StackPanel Margin="5,0,0,0" IsEnabled="False">
+				<StackPanel Orientation="Horizontal" Spacing="5">
+					<TextBlock VerticalAlignment="Center">Scale</TextBlock>
+					<ComboBox SelectedIndex="{Binding LScalingType}" MaxWidth="64" Margin="0,1,0,1">
+						<ComboBoxItem>+L</ComboBoxItem>
+						<ComboBoxItem>-L</ComboBoxItem>
+						<ComboBoxItem>+E</ComboBoxItem>
+						<ComboBoxItem>-E</ComboBoxItem>
+					</ComboBox>
+					<ComboBox SelectedIndex="{Binding RScalingType}" MaxWidth="64" Margin="0,1,0,1">
+						<ComboBoxItem>+L</ComboBoxItem>
+						<ComboBoxItem>-L</ComboBoxItem>
+						<ComboBoxItem>+E</ComboBoxItem>
+						<ComboBoxItem>-E</ComboBoxItem>
+					</ComboBox>
+				</StackPanel>
+				<StackPanel Orientation="Horizontal" Spacing="5">
+					<StackPanel Spacing="5">
+						<TextBlock HorizontalAlignment="Center">Break</TextBlock>
+						<TextBlock Text="{Binding Delay}" HorizontalAlignment="Center"/>
+						<ctrls:ParamSlider Value="{Binding Delay}" HorizontalAlignment="Center"/>
+					</StackPanel>
+					<StackPanel Spacing="5">
+						<TextBlock HorizontalAlignment="Center">Left</TextBlock>
+						<TextBlock Text="{Binding Delay}" HorizontalAlignment="Center"/>
+						<ctrls:ParamSlider Value="{Binding Delay}" HorizontalAlignment="Center"/>
+					</StackPanel>
+					<StackPanel Spacing="5">
+						<TextBlock HorizontalAlignment="Center">Right</TextBlock>
+						<TextBlock Text="{Binding Delay}" HorizontalAlignment="Center"/>
+						<ctrls:ParamSlider Value="{Binding Delay}" HorizontalAlignment="Center"/>
+					</StackPanel>
+					<StackPanel Spacing="5">
+						<TextBlock HorizontalAlignment="Center">Rate</TextBlock>
+						<TextBlock Text="{Binding Delay}" HorizontalAlignment="Center"/>
+						<ctrls:ParamSlider Value="{Binding Delay}" HorizontalAlignment="Center"/>
+					</StackPanel>
+				</StackPanel>
+			</StackPanel>
+			-->
+
+		</StackPanel>
+	</Panel>
+</UserControl>

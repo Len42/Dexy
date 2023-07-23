@@ -1,0 +1,60 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Dexy.DexyPatch.Views.DexySettingsView">
+	<StackPanel Spacing="5">
+		<TextBlock>Connection settings:</TextBlock>
+		<Panel Background="#2C2C2C">
+			<StackPanel Margin="5" Spacing="5">
+				<StackPanel Orientation="Horizontal" Spacing="5">
+					<TextBlock VerticalAlignment="Center">Comm port:</TextBlock>
+					<ComboBox Name="portListbox" SelectedItem="{Binding PortName}">
+						<ComboBox.ItemTemplate>
+							<DataTemplate>
+								<TextBlock Text="{Binding}"/>
+							</DataTemplate>
+						</ComboBox.ItemTemplate>
+					</ComboBox>
+				</StackPanel>
+				<StackPanel Orientation="Horizontal" Spacing="5">
+					<TextBlock VerticalAlignment="Center">Baud rate:</TextBlock>
+					<TextBox Text="{Binding BaudRate}" Width="95"/>
+				</StackPanel>
+				<StackPanel Orientation="Horizontal" Spacing="5">
+					<TextBlock VerticalAlignment="Center">Parity:</TextBlock>
+					<ComboBox SelectedIndex="{Binding Parity}">
+						<ComboBoxItem>None</ComboBoxItem>
+						<ComboBoxItem>Odd</ComboBoxItem>
+						<ComboBoxItem>Even</ComboBoxItem>
+						<ComboBoxItem>Mark</ComboBoxItem>
+						<ComboBoxItem>Space</ComboBoxItem>
+					</ComboBox>
+				</StackPanel>
+				<StackPanel Orientation="Horizontal" Spacing="5">
+					<TextBlock VerticalAlignment="Center">Data bits:</TextBlock>
+					<ComboBox SelectedIndex="{Binding DataBitsIndex}">
+						<ComboBoxItem>5</ComboBoxItem>
+						<ComboBoxItem>6</ComboBoxItem>
+						<ComboBoxItem>7</ComboBoxItem>
+						<ComboBoxItem>8</ComboBoxItem>
+					</ComboBox>
+				</StackPanel>
+				<StackPanel Orientation="Horizontal" Spacing="5">
+					<TextBlock VerticalAlignment="Center">Stop bits:</TextBlock>
+					<ComboBox SelectedIndex="{Binding StopBits}">
+						<ComboBoxItem>0</ComboBoxItem>
+						<ComboBoxItem>1</ComboBoxItem>
+						<ComboBoxItem>2</ComboBoxItem>
+						<ComboBoxItem>1.5</ComboBoxItem>
+					</ComboBox>
+				</StackPanel>
+				<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="5">
+					<Button Content="Connect" Command="{Binding OkButtonCommand}"/>
+					<Button Content="{Binding CancelButtonText}" Command="{Binding CancelButtonCommand}"/>
+				</StackPanel>
+			</StackPanel>
+		</Panel>
+	</StackPanel>
+</UserControl>

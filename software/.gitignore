@@ -1,0 +1,8 @@
+bin
+obj
+x64
+Debug
+Release
+.vs
+*.user
+launchSettings.json

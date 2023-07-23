@@ -1,0 +1,89 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:ctrls="using:Dexy.DexyPatch.Controls"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Dexy.DexyPatch.Views.PatchView">
+	<DockPanel MaxWidth="1280" HorizontalAlignment="Left" VerticalAlignment="Top">
+		  <!-- MaxWidth="1680" with scaling controls -->
+		<RelativePanel DockPanel.Dock="Top"
+					   Height="190"
+					   Margin="10,0,0,5">
+			<TextBlock Text="Patch name"
+					   Name="patchNameLabel"
+					   Margin="0,0,0,2"/>
+			<TextBox Text="{Binding PatchName}"
+					 FontSize="18" FontWeight="Bold"
+					 MaxLength="{Binding MaxNameLength}"
+					 MinWidth="200"
+					 Name="patchName"
+					 RelativePanel.Below="patchNameLabel"
+					 Margin="0"/>
+			<TextBlock Text="Algorithm"
+					   Name="algorithmLabel"
+					   RelativePanel.Below="patchName"
+					   Margin="0,5,0,2"/>
+			<ComboBox SelectedIndex="{Binding Algorithm}"
+					  Name="algorithm"
+					  RelativePanel.Below="algorithmLabel"
+					  Margin="0">
+				<ComboBox.ItemsPanel>
+					<ItemsPanelTemplate>
+						<WrapPanel/>
+					</ItemsPanelTemplate>
+				</ComboBox.ItemsPanel>
+				<ComboBox.ItemTemplate>
+					<DataTemplate>
+						<Image Source="{Binding}" Width="100" Height="100"/>
+					</DataTemplate>
+				</ComboBox.ItemTemplate>
+			</ComboBox>
+			<StackPanel Spacing="5"
+						RelativePanel.RightOf="patchName"
+						RelativePanel.AlignTopWith="patchNameLabel"
+						Margin="10,0,0,0">
+				<TextBlock HorizontalAlignment="Center">Feedback</TextBlock>
+				<TextBlock Text="{Binding Feedback}" HorizontalAlignment="Center"/>
+				<ctrls:ParamSlider Value="{Binding Feedback}" HorizontalAlignment="Center"/>
+			</StackPanel>
+		</RelativePanel>
+		<Grid ColumnDefinitions="1*,1*"
+			  RowDefinitions="1*,1*,1*"
+			  MaxHeight="750">
+			<!-- Each of these will create an OperatorView -->
+			<!-- Note that the displayed operator numbers are in the opposite order to
+				 the numbers used in the code. This is due to a legacy implementation detail. -->
+			<ContentControl Grid.Column="0" Grid.Row="0"
+							Content="{Binding OperatorVMs[5]}"
+							Background="#ff2b2b2b" Opacity="1"
+							BorderBrush="#55888888" BorderThickness="2"
+							Margin="10"/>
+			<ContentControl Grid.Column="1" Grid.Row="0"
+							Content="{Binding OperatorVMs[4]}"
+							Background="#ff2b2b2b" Opacity="1"
+							BorderBrush="#55888888" BorderThickness="2"
+							Margin="10"/>
+			<ContentControl Grid.Column="0" Grid.Row="1"
+							Content="{Binding OperatorVMs[3]}"
+							Background="#ff2b2b2b" Opacity="1"
+							BorderBrush="#55888888" BorderThickness="2"
+							Margin="10"/>
+			<ContentControl Grid.Column="1" Grid.Row="1"
+							Content="{Binding OperatorVMs[2]}"
+							Background="#ff2b2b2b" Opacity="1"
+							BorderBrush="#55888888" BorderThickness="2"
+							Margin="10"/>
+			<ContentControl Grid.Column="0" Grid.Row="2"
+							Content="{Binding OperatorVMs[1]}"
+							Background="#ff2b2b2b" Opacity="1"
+							BorderBrush="#55888888" BorderThickness="2"
+							Margin="10"/>
+			<ContentControl Grid.Column="1" Grid.Row="2"
+							Content="{Binding OperatorVMs[0]}"
+							Background="#ff2b2b2b" Opacity="1"
+							BorderBrush="#55888888" BorderThickness="2"
+							Margin="10"/>
+		</Grid>
+	</DockPanel>
+</UserControl>

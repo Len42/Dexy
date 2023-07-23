@@ -1,0 +1,112 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:Dexy.DexyPatch.ViewModels"
+		xmlns:views="using:Dexy.DexyPatch.Views"
+        mc:Ignorable="d" d:DesignWidth="1500" d:DesignHeight="900"
+        x:Class="Dexy.DexyPatch.Views.MainWindow"
+        Icon="/Assets/DexyPatch.ico"
+        Title="DexyPatch"
+		TransparencyLevelHint="AcrylicBlur"
+		Background="Transparent"
+		ExtendClientAreaToDecorationsHint="True"
+		Closed="OnClosed">
+
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <vm:MainWindowViewModel/>
+    </Design.DataContext>
+
+	<Panel>
+		<ExperimentalAcrylicBorder IsHitTestVisible="False">
+			<ExperimentalAcrylicBorder.Material>
+				<ExperimentalAcrylicMaterial
+					BackgroundSource="Digger"
+					TintColor="Black"
+					TintOpacity="1"
+					MaterialOpacity="0.65" />
+			</ExperimentalAcrylicBorder.Material>
+		</ExperimentalAcrylicBorder>
+		<DockPanel>
+			<StackPanel DockPanel.Dock="Top"
+						Orientation="Horizontal"
+						Spacing="5"
+						Margin="10,10,10,0">
+				<TextBlock Text="{Binding Title}" VerticalAlignment="Center"/>
+				<TextBlock Text="●" IsVisible="{Binding IsModified}" VerticalAlignment="Center">
+					<ToolTip.Tip>Modified</ToolTip.Tip>
+				</TextBlock>
+				<TextBlock Text=" - " VerticalAlignment="Center"/>
+				<TextBlock Text="{Binding AppName}" VerticalAlignment="Center"/>
+			</StackPanel>
+			<RelativePanel DockPanel.Dock="Top" Height="32" Margin="5,5,5,5">
+				<Button Name="btnNew"
+						Command="{Binding LoadDefaultPatchBankCommand}"
+						Margin="3,0,3,0">
+					<ToolTip.Tip>New</ToolTip.Tip>
+					<PathIcon Data="{StaticResource new_regular}" />
+				</Button>
+				<Button Name="btnLoad"
+						Command="{Binding LoadFileCommand}"
+						RelativePanel.RightOf="btnNew"
+						Margin="3,0,3,0">
+					<ToolTip.Tip>Load patches from file</ToolTip.Tip>
+					<PathIcon Data="{StaticResource document_regular}" />
+				</Button>
+				<Button Name="btnSave"
+						Command="{Binding SaveFileCommand}"
+						IsEnabled="{Binding IsModified}"
+						RelativePanel.RightOf="btnLoad"
+						Margin="3,0,3,0">
+					<ToolTip.Tip>Save patches to file</ToolTip.Tip>
+					<PathIcon Data="{StaticResource save_regular}" />
+				</Button>
+				<Button Name="btnSaveAs"
+						Command="{Binding SaveFileAsCommand}"
+						IsVisible="{Binding PatchBank, Converter={x:Static ObjectConverters.IsNotNull}}"
+						RelativePanel.RightOf="btnSave"
+						Margin="3,0,3,0">
+					<ToolTip.Tip>Save patches to new file</ToolTip.Tip>
+					<PathIcon Data="{StaticResource save_as_regular}" />
+				</Button>
+				<Button Name="btnUpload"
+						Command="{Binding UploadPatchBankCommand}"
+						IsEnabled="{Binding IsDexyConnected}"
+						RelativePanel.RightOf="btnSaveAs"
+						Margin="3,0,3,0">
+					<ToolTip.Tip>Upload patches from Dexy</ToolTip.Tip>
+					<PathIcon Data="{StaticResource arrow_upload_regular}" />
+				</Button>
+				<Button Name="btnDownload"
+						Command="{Binding DownloadPatchBankCommand}"
+						IsEnabled="{Binding CanDownloadPatchBank}"
+						RelativePanel.RightOf="btnUpload"
+						Margin="3,0,3,0">
+					<ToolTip.Tip>Download patches to Dexy</ToolTip.Tip>
+					<PathIcon Data="{StaticResource arrow_download_regular}" />
+				</Button>
+				<Button Command="{Binding ShowHideDexyPaneCommand}"
+						RelativePanel.AlignRightWithPanel="True"
+						Margin="3,0,3,0">
+					<ToolTip.Tip>Show/hide Dexy status</ToolTip.Tip>
+					<Panel>
+						<PathIcon IsVisible="{Binding IsDexyConnected}" Data="{StaticResource plug_connected_regular}" />
+						<PathIcon IsVisible="{Binding !IsDexyConnected}" Data="{StaticResource plug_disconnected_regular}" />
+					</Panel>
+				</Button>
+			</RelativePanel>
+			<TextBlock DockPanel.Dock="Bottom" Text="{Binding VersionInfo}" Margin="10,0,10,10"/>
+			<SplitView IsPaneOpen="{Binding IsDexyPaneOpen}"
+					   DisplayMode="Inline"
+					   PanePlacement="Right"
+					   OpenPaneLength="300">
+				<ContentControl Content="{Binding PatchBankVM}"/> <!-- will create a PatchBankView -->
+				<SplitView.Pane>
+					<ContentControl Content="{Binding DexyVM}" Margin="10"/> <!-- will create a DexyView -->
+				</SplitView.Pane>
+			</SplitView>
+		</DockPanel>
+	</Panel>
+</Window>

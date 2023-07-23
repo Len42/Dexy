@@ -1,0 +1,20 @@
+namespace Dexy {{
+
+/// @brief Firmware version info
+namespace VersionInfo {{
+    constexpr unsigned major = {verMajor};
+    constexpr unsigned minor = {verMinor};
+    constexpr unsigned revision = {verRevision};
+    constexpr unsigned build = {verBuild};
+    constexpr char commit[] = "{verCommit}";
+    constexpr bool isDevBuild = {verIsDevBuild};
+    //constexpr char name[] = "{verString}";
+    constexpr char name[] = "{verMajor}.{verMinor}.{verRevision}.{verBuild}";
+    constexpr char nameDev[] = "{verMajor}.{verMinor}.{verRevision}.{verBuild}-dev";
+    constexpr const char* getName() {{ return isDevBuild ? nameDev : name; }}
+    constexpr char date[] = "{verDatestamp}";
+    constexpr char time[] = "{verTimestamp}";
+}} }}
+
+// Version number for picotool
+bi_decl(bi_program_version_string(Dexy::VersionInfo::getName()))
