@@ -60,16 +60,18 @@ The Dexy module is open source hardware. The hardware design is
 published under the [Creative Commons Attribution license](http://creativecommons.org/licenses/by/4.0/).
 Firmware and software are published under the [MIT license](../firmware/LICENSE).
 
+Please note that I am a hobbyist, not a trained electronics engineer. No guarantees!
+
 ### PCBs
 
 PCB layouts are provided in KiCad and gerber formats. A PCB layout for a drilled front panel (with no labels) is also included.
 
-The PCBs that I designed for this module can be ordered from OSH Park:
+The PCBs that I designed for this module can be ordered from OSH Park.
+_Note:_ The controls PCB here is missing the debouncing capacitors on the rotary
+encoder. The latest files in this repo include those capacitors.
 - [Main board](https://oshpark.com/shared_projects/SqPinUsc)
 - [Controls board](https://oshpark.com/shared_projects/VcDtCyfD)
 - [Front panel](https://oshpark.com/shared_projects/q5TKd42b)
-
-Please note that I am a hobbyist, not a trained electronics engineer. No guarantees!
 
 ### Schematic
 
