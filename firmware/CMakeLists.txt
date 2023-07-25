@@ -28,12 +28,13 @@ add_executable(Dexy ${PROJ_CPP_FILES} ssd1306.c)
 pico_set_program_name(Dexy "Dexy")
 #pico_set_program_version(Dexy "0.0") # No - this will be set by MakeVersionFile & Dexy
 
+set(CMD_PYTHON "py") # for Windows
+#set(CMD_PYTHON "/usr/local/bin/python3.11") # for macOS, Linux
+
 # Update version info file from the latest git tag
 list(APPEND VERSION_FILES "${PROJECT_SOURCE_DIR}/Version.h" "${PROJECT_SOURCE_DIR}/doc/Doxyfile.doxy")
 list(TRANSFORM VERSION_FILES APPEND ".template" OUTPUT_VARIABLE VERSION_TEMPLATES)
 target_sources(Dexy PRIVATE ${VERSION_FILES})
-set(CMD_PYTHON "py") # for Windows
-#set(CMD_PYTHON "/usr/local/bin/python3.11") # for macOS, Linux
 set(VERSION_TEMP_FILE "${PROJECT_BINARY_DIR}/version-temp")
 set(VERSION_INFO_FILE "${PROJECT_BINARY_DIR}/version-info")
 add_custom_target(MakeVersionFile
@@ -49,6 +50,16 @@ add_custom_command(
     COMMAND ${CMD_PYTHON} ${PROJECT_SOURCE_DIR}/make-version-file.py
         ${VERSION_INFO_FILE}
         ${VERSION_FILES}
+)
+
+# Convert binary data files to C headers (until C++ gets #embed)
+list(APPEND BINARY_FILES "${PROJECT_SOURCE_DIR}/../patches/default.dexy")
+list(TRANSFORM BINARY_FILES APPEND ".h" OUTPUT_VARIABLE BINARY_INC_FILES)
+target_sources(Dexy PRIVATE ${BINARY_INC_FILES})
+add_custom_command(
+    OUTPUT ${BINARY_INC_FILES}
+    DEPENDS ${BINARY_FILES}
+    COMMAND ${CMD_PYTHON} ${PROJECT_SOURCE_DIR}/make-binary-inc-file.py ${BINARY_FILES}
 )
 
 # Set compiler options
