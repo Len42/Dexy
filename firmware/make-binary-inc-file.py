@@ -17,10 +17,8 @@ cmdName, *inputFiles = sys.argv
 outputDir = os.path.dirname(cmdName)
 #outputDir = ''
 cmdName = os.path.basename(cmdName)
-print(f'{cmdName}: {outputDir=}')
 for inputFile in inputFiles:
     outputFile = inputFile + '.h'
-    print(f'{cmdName}: {inputFile=} {outputFile=}')
     if outputDir:
         outputFile = os.path.join(outputDir, os.path.basename(outputFile))
     try:
