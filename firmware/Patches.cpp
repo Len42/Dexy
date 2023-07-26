@@ -55,7 +55,8 @@ static consteval SerializedPatchBank patchBankToBytes()
 /// over-written by the SDK flash programming API.
 IN_FLASH("PatchData")
 static constinit Flash::Wrapper<SerializedPatchBank> initialPatchData {
-    patchBankToBytes<makeDefaultPatchBank()>() // #embed pls?
+    #include "default.dexy.h" // #embed pls?
+    // old: patchBankToBytes<makeDefaultPatchBank()>()
 };
 
 /// @brief The patch bank that is currently loaded
