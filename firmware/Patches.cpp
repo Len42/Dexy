@@ -55,18 +55,18 @@ static consteval SerializedPatchBank patchBankToBytes()
 /// over-written by the SDK flash programming API.
 IN_FLASH("PatchData")
 static constinit Flash::Wrapper<SerializedPatchBank> initialPatchData {
-    //patchBankToBytes<makeDefaultPatchBank()>() // #embed pls?
-    #include "default.dexy.h"
+    #include "default.dexy.h" // #embed pls?
+    // old: patchBankToBytes<makeDefaultPatchBank()>()
 };
 
 // DEBUG
-static constexpr SerializedPatchBank testPatchData1 {
-    #include "default.dexy.h"
-    //#include "new patchbank.dexy.h"
-};
-static constexpr SerializedPatchBank testPatchData2 {
-    patchBankToBytes<makeDefaultPatchBank()>()
-};
+// static constexpr SerializedPatchBank testPatchData1 {
+//     #include "default.dexy.h"
+//     //#include "new patchbank.dexy.h"
+// };
+// static constexpr SerializedPatchBank testPatchData2 {
+//     patchBankToBytes<makeDefaultPatchBank()>()
+// };
 
 /// @brief The patch bank that is currently loaded
 static PatchBank patchBankCurrent;
@@ -86,14 +86,13 @@ static consteval void verifyData()
     constexpr PatchOpChange change2{.iPatch=0, .iOp=0, .field=0, .value=0};
     static_assert(Serialize::opParamsChangeDataSize == Serialize::objToBytes<PatchOpChange, change2, Serialize::opParamsChangeDataSize>().size());
     static_assert((sizeof(Flash::Wrapper<SerializedPatchBank>) % 4096) == 0);
+    // DEBUG
+    //static_assert(testPatchData1 == testPatchData2);
 }
 
 IN_FLASH("Patches")
 void init()
 {
-    // DEBUG
-    static_assert(testPatchData1 == testPatchData2);
-
     verifyData();
 
     // Initialize the patch bank from serialized storage

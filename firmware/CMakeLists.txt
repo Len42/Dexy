@@ -52,14 +52,15 @@ add_custom_command(
         ${VERSION_FILES}
 )
 
-# Convert binary data files to C headers (until C++ gets #embed)
-list(APPEND BINARY_FILES "${PROJECT_SOURCE_DIR}/../patches/default.dexy")
-list(TRANSFORM BINARY_FILES APPEND ".h" OUTPUT_VARIABLE BINARY_INC_FILES)
-target_sources(Dexy PRIVATE ${BINARY_INC_FILES})
+# Convert binary patch data file to C syntax (until C++ gets #embed)
+set(PATCH_FILENAME "default.dexy")
+set(PATCH_FILE_BIN "${PROJECT_SOURCE_DIR}/../patches/${PATCH_FILENAME}")
+set(PATCH_FILE_INC "${PROJECT_SOURCE_DIR}/${PATCH_FILENAME}.h")
+target_sources(Dexy PRIVATE ${PATCH_FILE_INC})
 add_custom_command(
-    OUTPUT ${BINARY_INC_FILES}
-    DEPENDS ${BINARY_FILES}
-    COMMAND ${CMD_PYTHON} ${PROJECT_SOURCE_DIR}/make-binary-inc-file.py ${BINARY_FILES}
+    OUTPUT ${PATCH_FILE_INC}
+    DEPENDS ${PATCH_FILE_BIN}
+    COMMAND ${CMD_PYTHON} ${PROJECT_SOURCE_DIR}/make-binary-inc-file.py ${PATCH_FILE_BIN}
 )
 
 # Set compiler options
