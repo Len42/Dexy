@@ -63,7 +63,11 @@ using AttackTable = WaveTable<level_t, sizeLookupTable,
         return level_t(std::round(index * index * 0.2499962));
     }>;
 
-// TODO: AttackStartTable doc
+/// @brief Lookup table for reverse mapping level -> progress, used when starting
+/// the attack stage.
+/// @details The table must map index 0 -> value 0 and index 512 -> value 32768.
+/// @note This relies on std::sqrt() being declared constexpr,
+/// which it is in gcc but not in other compilers or the C++20 standard. :(
 using AttackStartTable = WaveTable<uint16_t, sizeLookupTable,
     [](std::size_t index, [[maybe_unused]] std::size_t numValues) {
         return uint16_t(std::round(std::sqrt((index * 128) / 0.2499962) * 64));
@@ -96,7 +100,7 @@ static constexpr level_t decayTableEntry(std::size_t index, std::size_t numValue
 using DecayTable = WaveTable<level_t, sizeLookupTable, decayTableEntry>;
 
 /// @brief Lookup table for reverse mapping level -> progress, used when starting
-/// decay and release stages.
+/// the decay and release stages.
 /// @details The table must map index 0 -> value 32768 and index 512 -> value 0.
 /// @note This relies on std::log() being declared constexpr,
 /// which it is in gcc but not in other compilers or the C++20 standard. :(
