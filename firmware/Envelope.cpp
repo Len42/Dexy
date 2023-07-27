@@ -63,6 +63,16 @@ using AttackTable = WaveTable<level_t, sizeLookupTable,
         return level_t(std::round(index * index * 0.2499962));
     }>;
 
+/// @brief Lookup table for reverse mapping level -> progress, used when starting
+/// the attack stage.
+/// @details The table must map index 0 -> value 0 and index 512 -> value 32768.
+/// @note This relies on std::sqrt() being declared constexpr,
+/// which it is in gcc but not in other compilers or the C++20 standard. :(
+using AttackStartTable = WaveTable<uint16_t, sizeLookupTable,
+    [](std::size_t index, [[maybe_unused]] std::size_t numValues) {
+        return uint16_t(std::round(std::sqrt((index * 128) / 0.2499962) * 64));
+    }>;
+
 /// @brief Helper for initializing expRateMap
 /// @note This relies on math functions (e.g. std::exp()) being declared
 /// constexpr, which they are in gcc but not in other compilers or the
@@ -90,7 +100,7 @@ static constexpr level_t decayTableEntry(std::size_t index, std::size_t numValue
 using DecayTable = WaveTable<level_t, sizeLookupTable, decayTableEntry>;
 
 /// @brief Lookup table for reverse mapping level -> progress, used when starting
-/// decay and release stages.
+/// the decay and release stages.
 /// @details The table must map index 0 -> value 32768 and index 512 -> value 0.
 /// @note This relies on std::log() being declared constexpr,
 /// which it is in gcc but not in other compilers or the C++20 standard. :(
@@ -171,29 +181,44 @@ void Envelope::doStage<Envelope::Stage::Idle>()
 template<>
 void Envelope::initStage<Envelope::Stage::Delay>()
 {
-    progress = 0;
+    // Note that the Delay stage keeps track of two progress variables -
+    // delayProgress times the Delay stage and progress is used to run the
+    // Release curve, to smoothly end the previous note without a click.
+    delayProgress = 0;
+    // Initialize progress so we use the tail end of the decay curve instead
+    // of starting at the beginning, to give a gentler decay.
+    progress_t index = progress_t(level) << 8;
+    progress = 512 * DecayStartTable::lookupInterpolate(&index, 0);
     increment = delay;
-    level = 0;
+    //level starts at its current value and goes down from there
 }
 
 template<>
 void Envelope::doStage<Envelope::Stage::Delay>()
 {
-    if (progress >= max_progress_t) {
+    if (delayProgress >= max_progress_t) {
         setStage<Stage::Attack>();
     } else {
         // delaying...
-        //level = 0; // redundant
-        progress += increment;
+        delayProgress += increment;
+        // ... and also running the Release curve
+        if (level > 0) {
+            // lookupInterpolate() takes care of incrementing progress.
+            level = DecayTable::lookupInterpolate(&progress, increment);
+        }
     }
 }
 
 template<>
 void Envelope::initStage<Envelope::Stage::Attack>()
 {
-    progress = 0;
+    // Initialize progress so we use the tail end of the attack curve instead
+    // of starting at the beginning, to avoid a click when starting a note while
+    // the previous note envelope is running.
+    progress_t index = progress_t(level) << 8;
+    progress = 512 * AttackStartTable::lookupInterpolate(&index, 0);
+    //level starts at its current value and goes up from there
     increment = attack;
-    // level starts at its current value
 }
 
 template<>
