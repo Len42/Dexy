@@ -177,24 +177,31 @@ void Envelope::doStage<Envelope::Stage::Idle>()
 template<>
 void Envelope::initStage<Envelope::Stage::Delay>()
 {
-    progress = 0;
+    // Note that the Delay stage keeps track of two progress variables -
+    // delayProgress times the Delay stage and progress is used to run the
+    // Release curve, to smoothly end the previous note without a click.
+    delayProgress = 0;
+    // Initialize progress so we use the tail end of the decay curve instead
+    // of starting at the beginning, to give a gentler decay.
+    progress_t index = progress_t(level) << 8;
+    progress = 512 * DecayStartTable::lookupInterpolate(&index, 0);
     increment = delay;
-    // level = 0; // Don't do this because it can make a click if the previous
-                  // release is still running.
-    // BUG: That means that the previous output level continues during the delay
-    // stage. The fix for that is to make Delay do the same as Release, but then
-    // two progress variables are needed - one to track the delay time and one to
-    // run the release curve.
+    //level starts at its current value and goes down from there
 }
 
 template<>
 void Envelope::doStage<Envelope::Stage::Delay>()
 {
-    if (progress >= max_progress_t) {
+    if (delayProgress >= max_progress_t) {
         setStage<Stage::Attack>();
     } else {
         // delaying...
-        progress += increment;
+        delayProgress += increment;
+        // ... and also running the Release curve
+        if (level > 0) {
+            // lookupInterpolate() takes care of incrementing progress.
+            level = DecayTable::lookupInterpolate(&progress, increment);
+        }
     }
 }
 

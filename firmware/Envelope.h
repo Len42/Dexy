@@ -84,6 +84,7 @@ private:
 
     // Current status of the envelope
     progress_t progress = 0;    ///< Current position in the current stage
+    progress_t delayProgress = 0;    ///< Current position in the delay stage
     rate_t increment = 0;       ///< Amount to increment progress at each step
     level_t level = 0;          ///< Current envelope level
     bool gateOn = false;        ///< Is the gate on? - used for looping
