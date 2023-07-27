@@ -174,6 +174,8 @@ void Envelope::initStage<Envelope::Stage::Delay>()
     progress = 0;
     increment = delay;
     level = 0;
+    // TODO: don't reset level; continue Release instead
+    // (but probably don't need DecayStartTable)
 }
 
 template<>
@@ -183,6 +185,7 @@ void Envelope::doStage<Envelope::Stage::Delay>()
         setStage<Stage::Attack>();
     } else {
         // delaying...
+        // TODO: if level > 0, continue release curve
         //level = 0; // redundant
         progress += increment;
     }
@@ -194,6 +197,7 @@ void Envelope::initStage<Envelope::Stage::Attack>()
     progress = 0;
     increment = attack;
     // level starts at its current value
+    // TODO: need AttackStartTable to make that work without a click
 }
 
 template<>
