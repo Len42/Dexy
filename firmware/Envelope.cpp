@@ -63,6 +63,12 @@ using AttackTable = WaveTable<level_t, sizeLookupTable,
         return level_t(std::round(index * index * 0.2499962));
     }>;
 
+// TODO: AttackStartTable doc
+using AttackStartTable = WaveTable<uint16_t, sizeLookupTable,
+    [](std::size_t index, [[maybe_unused]] std::size_t numValues) {
+        return uint16_t(std::round(std::sqrt((index * 128) / 0.2499962) * 64));
+    }>;
+
 /// @brief Helper for initializing expRateMap
 /// @note This relies on math functions (e.g. std::exp()) being declared
 /// constexpr, which they are in gcc but not in other compilers or the
@@ -173,9 +179,12 @@ void Envelope::initStage<Envelope::Stage::Delay>()
 {
     progress = 0;
     increment = delay;
-    level = 0;
-    // TODO: don't reset level; continue Release instead
-    // (but probably don't need DecayStartTable)
+    // level = 0; // Don't do this because it can make a click if the previous
+                  // release is still running.
+    // BUG: That means that the previous output level continues during the delay
+    // stage. The fix for that is to make Delay do the same as Release, but then
+    // two progress variables are needed - one to track the delay time and one to
+    // run the release curve.
 }
 
 template<>
@@ -185,8 +194,6 @@ void Envelope::doStage<Envelope::Stage::Delay>()
         setStage<Stage::Attack>();
     } else {
         // delaying...
-        // TODO: if level > 0, continue release curve
-        //level = 0; // redundant
         progress += increment;
     }
 }
@@ -194,10 +201,13 @@ void Envelope::doStage<Envelope::Stage::Delay>()
 template<>
 void Envelope::initStage<Envelope::Stage::Attack>()
 {
-    progress = 0;
+    // Initialize progress so we use the tail end of the attack curve instead
+    // of starting at the beginning, to avoid a click when starting a note while
+    // the previous note envelope is running.
+    progress_t index = progress_t(level) << 8;
+    progress = 512 * AttackStartTable::lookupInterpolate(&index, 0);
+    //level starts at its current value and goes up from there
     increment = attack;
-    // level starts at its current value
-    // TODO: need AttackStartTable to make that work without a click
 }
 
 template<>
