@@ -156,6 +156,7 @@ inline output_t genNextOutput()
     // Call genNextOutput() on each operator, handling modulation and feedback,
     // based on the currently-selected algorithm.
     int32_t outputTotal = 0;
+    int numOutputs = 0;
     output_t freqModPrev = 0;
     output_t freqModSaved = 0;
     static int32_t feedback0 = 0;
@@ -173,9 +174,10 @@ inline output_t genNextOutput()
                 freqMod = freqModSaved;
                 break;
             case UseMod::fb:
-                // Feedback is the average of the two previous values, attenuated by feedbackAmount
-                // TODO: Scope this! Should we really have to divide by 16?
-                freqMod = output_t((int32_t(feedbackAmount) * ((feedback0 + feedback1) / 2)) / (1024*16));
+                // Feedback is the average of the two previous values attenuated
+                // by feedbackAmount. Also arbitrarily divided by 20 to reduce
+                // distortion at high feedback amounts.
+                freqMod = output_t((int32_t(feedbackAmount) * ((feedback0 + feedback1) / 2)) / (1024*20));
                 break;
             case UseMod::none:
             default:
@@ -186,7 +188,11 @@ inline output_t genNextOutput()
         output_t outputOp = op.genNextOutput(freqMod, timbreMod);
         // Save the operator's output as either an audio output or a modulator
         if (algoOp.isOutput) {
-            outputTotal += outputOp;
+            // Skip muted operators completely so that they don't kill the average.
+            if (op.getOutputLevel() != 0) {
+                outputTotal += outputOp;
+                ++numOutputs;
+            }
         } else {
             freqModPrev = outputOp;
             switch (algoOp.saveMod) {
@@ -208,7 +214,7 @@ inline output_t genNextOutput()
         }
     }
 
-    return output_t(outputTotal / algorithm.numOutputs);
+    return output_t(outputTotal / std::max(numOutputs, 1));
 }
 
 } } // namespace Synth

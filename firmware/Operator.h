@@ -23,6 +23,10 @@ public:
     /// @param pitch Frequency represented as a Dexy::phase_t
     void setFrequency(phase_t pitch);
 
+    /// @brief Get this Operator's specified output level.
+    /// @return The Operator's output level
+    level_t getOutputLevel() const { return outputLevel; }
+
     /// @brief Gate start signal has been received - Start playing a note
     void gateStart();
 
