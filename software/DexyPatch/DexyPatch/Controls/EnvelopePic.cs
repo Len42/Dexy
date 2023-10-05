@@ -79,9 +79,9 @@ namespace Dexy.DexyPatch.Controls
 
             double delay = (Delay == 0) ? 0 : ParamToTime(DexyDefs.max_param_t - Delay);
             double attack = ParamToTime(Attack) * 2.0 / 3.0; // Attack is faster by design
-            double decay = ParamToTime(Decay);
             double sustainLevel = Sustain;
-            double release = ParamToTime(Release);
+            double decay = ParamToTime(Decay + sustainLevel);
+            double release = ParamToTime(Release + DexyDefs.max_param_t - sustainLevel);
             double totalTime = delay + attack + decay + release;
             double sustainTime = Loop ? 0 : totalTime / 3;
             totalTime += sustainTime;
