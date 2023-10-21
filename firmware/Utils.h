@@ -123,6 +123,17 @@ consteval T mid_value()
     return static_cast<T>((std::numeric_limits<T>::min() + std::numeric_limits<T>::max()) / 2);
 }
 
+/// @brief Convert a std::array of chars to a std::string_view
+/// @note There is a std::string_view constructor for this in C++ 23.
+/// @tparam SIZE 
+/// @param str 
+/// @return 
+template<size_t SIZE>
+std::string_view toStringView(const std::array<char,SIZE>& str)
+{
+    return std::string_view(str.data(), SIZE);
+}
+
 /// @brief Compile-time conversion of a 0-terminated string constant to a
 /// std::array<char>
 /// @tparam SIZE String length deduced from the str argument

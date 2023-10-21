@@ -82,83 +82,23 @@ void drawCircle(unsigned x, unsigned y, unsigned r);
 void drawText(char ch, unsigned x, unsigned y);
 
 /// @brief Display a text string
-/// @param str String pointer (does not have to be null terminated)
-/// @param numChars Number of characters in the string (not including \0)
+/// @param str Text to be displayed
 /// @param x X coordinate of the position
 /// @param y Y coordinate of the position
 /// @param breakLines If true, long text is broken at the right edge of the screen
 /// and wrapped to the next line
 /// @return Y coordinate of the bottom of the text (including wrapped lines,
 /// if breakLines == true)
-unsigned drawText(const char* str, unsigned numChars, unsigned x, unsigned y, bool breakLines);
-
-/// @brief Display a text string
-/// @tparam SIZE String length (including \0), deduced from the str argument
-/// @param str Null-terminated string constant
-/// @param x X coordinate of the position
-/// @param y Y coordinate of the position
-/// @param breakLines If true, long text is broken at the right edge of the screen
-/// and wrapped to the next line
-/// @return Y coordinate of the bottom of the text (including wrapped lines,
-/// if breakLines == true)
-template<size_t SIZE>
-unsigned drawText(const char(&str)[SIZE], unsigned x, unsigned y, bool breakLines)
-{
-    return drawText(str, SIZE-1, x, y, breakLines);
-}
-
-/// @brief Display a text string from a std::array
-/// @tparam SIZE String length, deduced from the str argument
-/// @param str String to display
-/// @param x X coordinate of the position
-/// @param y Y coordinate of the position
-/// @param breakLines If true, long text is broken at the right edge of the screen
-/// and wrapped to the next line
-/// @return Y coordinate of the bottom of the text (including wrapped lines,
-/// if breakLines == true)
-template<size_t SIZE>
-unsigned drawText(const std::array<char,SIZE>& str, unsigned x, unsigned y, bool breakLines)
-{
-    return drawText(str.data(), SIZE, x, y, breakLines);
-}
+unsigned drawText(std::string_view str, unsigned x, unsigned y, bool breakLines);
 
 /// @brief Calculate the vertical space required to display the given string
-/// @param str String pointer (does not have to be null terminated)
-/// @param numChars Number of characters in the string (not including \0)
+/// @param str Text string
 /// @param x X coordinate of the position (because where the text is displayed
 /// can affect the amount of vertical space required)
 /// @param breakLines If true, long text is broken at the right edge of the screen
 /// and wrapped to the next line
 /// @return The height of the given text
-unsigned getTextHeight(const char* str, unsigned numChars, unsigned x, bool breakLines);
-
-/// @brief Calculate the vertical space required to display the given string
-/// @tparam SIZE String length (including \0), deduced from the str argument
-/// @param str Null-terminated string constant
-/// @param x X coordinate of the position (because where the text is displayed
-/// can affect the amount of vertical space required)
-/// @param breakLines If true, long text is broken at the right edge of the screen
-/// and wrapped to the next line
-/// @return The height of the given text
-template<size_t SIZE>
-unsigned getTextHeight(const char(&str)[SIZE], unsigned x, bool breakLines)
-{
-    return getTextHeight(str, SIZE-1, x, breakLines);
-}
-
-/// @brief Calculate the vertical space required to display the given string
-/// @tparam SIZE String length, deduced from the str argument
-/// @param str String to display
-/// @param x X coordinate of the position (because where the text is displayed
-/// can affect the amount of vertical space required)
-/// @param breakLines If true, long text is broken at the right edge of the screen
-/// and wrapped to the next line
-/// @return The height of the given text
-template<size_t SIZE>
-unsigned getTextHeight(const std::array<char,SIZE>& str, unsigned x, bool breakLines)
-{
-    return getTextHeight(str.data(), SIZE, x, breakLines);
-}
+unsigned getTextHeight(std::string_view str, unsigned x, bool breakLines);
 
 /// @brief Calculate the horizontal space required to display a text string with
 /// the given number of characters
@@ -204,10 +144,9 @@ void showList(int itemSelected, auto getItem);
 /// @brief Display a list of strings, one per line
 /// @details If the list is too long to fit on the screen, the first portion of
 /// the listwill be displayed.
-/// @param getItem Function or lambda to return the i'th string and its length
-/// (not 0-terminated):
+/// @param getItem Function or lambda to return the i'th string:
 /// @code
-/// auto getItem(int i) -> std::tuple<const char*, unsigned>;
+/// auto getItem(int i) -> std::string_view;
 /// @endcode
 void showList(auto getItem);
 

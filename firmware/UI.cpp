@@ -317,8 +317,8 @@ static void showPatchList(int iSelected)
 {
     Display::showList(iSelected, [](int i) {
         return (i < int(numPatches))
-            ? std::tuple(Patches::getPatch(i).name.data(), Patches::patchNameLen)
-            : std::tuple(nullptr, 0u);
+            ? std::string_view(Patches::getPatch(i).name.data(), Patches::patchNameLen)
+            : std::string_view();
     });
 }
 
@@ -342,7 +342,7 @@ static void showSelectedPatchCompact(int iSelected)
     }
     Display::drawText(char('0' + iSelected%10), x, y);
     x += Display::charWidth() * 3/2;
-    Display::drawText(patchName, x, y, true);
+    Display::drawText(toStringView(patchName), x, y, true);
     Display::endDrawing();
 }
 

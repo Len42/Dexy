@@ -92,19 +92,18 @@ void drawText(char ch, unsigned x, unsigned y)
 
 /// @brief Helper function for drawText() and getTextHeight()
 /// @param str 
-/// @param numChars 
 /// @param x 
 /// @param y 
 /// @param breakLines 
 /// @param doDraw If true, draw the text; otherwise return text height without drawing
 /// @return Text height
 IN_FLASH("Display")
-static unsigned drawText(const char* str, unsigned numChars, unsigned x, unsigned y, bool breakLines, bool doDraw)
+static unsigned drawText(std::string_view str, unsigned x, unsigned y, bool breakLines, bool doDraw)
 {
     if (x > screenWidth() - charWidth())
         return 0; // this avoids an infinite loop with bad args
     unsigned xStart = x;
-    for (unsigned i = 0; i < numChars; ++i) {
+    for (char ch : str) {
         if (x > screenWidth() - charWidth()) {
             x = xStart;
             y += charHeight();
@@ -112,7 +111,7 @@ static unsigned drawText(const char* str, unsigned numChars, unsigned x, unsigne
                 return y;
         }
         if (doDraw) {
-            ssd1306_draw_char_with_font(&display, x, y, fontScale, fontUI, str[i]);
+            ssd1306_draw_char_with_font(&display, x, y, fontScale, fontUI, ch);
         }
         x += charWidth();
     }
@@ -120,15 +119,15 @@ static unsigned drawText(const char* str, unsigned numChars, unsigned x, unsigne
 }
 
 IN_FLASH("Display")
-unsigned drawText(const char* str, unsigned numChars, unsigned x, unsigned y, bool breakLines)
+unsigned drawText(std::string_view str, unsigned x, unsigned y, bool breakLines)
 {
-    return drawText(str, numChars, x, y, breakLines, /*doDraw*/true);
+    return drawText(str, x, y, breakLines, /*doDraw*/true);
 }
 
 IN_FLASH("Display")
-unsigned getTextHeight(const char* str, unsigned numChars, unsigned x, bool breakLines)
+unsigned getTextHeight(std::string_view str, unsigned x, bool breakLines)
 {
-    return drawText(str, numChars, x, 0, breakLines, /*doDraw*/false);
+    return drawText(str, x, 0, breakLines, /*doDraw*/false);
 }
 
 IN_FLASH("Display")
@@ -167,10 +166,10 @@ void showList(int itemSelected, auto getItem)
         if (y >= screenHeight())
             break;
         if (i >= 0) {
-            auto [str, maxLen] = getItem(i);
-            if (str == nullptr)
+            auto str = getItem(i);
+            if (str.empty())
                 break;
-            drawText(str, maxLen, xLeft, y, false);
+            drawText(str, xLeft, y, false);
         }
         y += charHeight();
     }

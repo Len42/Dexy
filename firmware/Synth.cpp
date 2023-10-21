@@ -107,9 +107,9 @@ unsigned getCurrentPatchNum()
     return patchIndex;
 }
 
-const Patches::patchName_t& getCurrentPatchName()
+const std::string_view getCurrentPatchName()
 {
-    return patchName;
+    return toStringView(patchName);
 }
 
 void setNotePitch(phase_t pitch)

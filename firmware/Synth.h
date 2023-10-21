@@ -19,8 +19,8 @@ void loadPatch(unsigned i);
 unsigned getCurrentPatchNum();
 
 /// @brief Get the name of the current patch
-/// @return Patch name as a fixed-length array (not 0-terminated)
-const Patches::patchName_t& getCurrentPatchName();
+/// @return Patch name as a std::string_view
+const std::string_view getCurrentPatchName();
 
 /// @brief Index of the patch that is initially selected at startup
 constexpr unsigned initialPatch = 2;
