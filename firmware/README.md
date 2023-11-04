@@ -59,7 +59,7 @@ default set.
 The FM synthesis is loosely based on the Yamaha DX7 voice architecture (but only a
 single voice is implemented). There are 6 operators, each consisting of a sine wave
 oscillator and an envelope generator. The operators are combined according to one of
-32 "algorithms" so that some operators are audio outputs and some operators modulate
+32 “algorithms” so that some operators are audio outputs and some operators modulate
 another operator's frequency.
 
 ### Notes
@@ -80,6 +80,7 @@ The Dexy firmware is open source and is published under the [MIT license](LICENS
 
 * [GCC for Arm](https://developer.arm.com/downloads/-/arm-gnu-toolchain-downloads) 12.2.1
 * [CMake](https://cmake.org/) 3.22.3
+* [Python](https://www.python.org/) 3.10.2
 * [Raspberry Pi Pico C/C++ SDK](https://github.com/raspberrypi/pico-sdk) 1.5.1
 * [zpp_bits](https://github.com/eyalz800/zpp_bits) 4.4.15
 * [pico-ssd1306](https://github.com/daschr/pico-ssd1306)
