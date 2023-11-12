@@ -132,8 +132,8 @@ namespace Dexy.DexyPatch.ViewModels
                 string suffix = isOutput ? "out" : "mod";
                 string resourcePath = $"avares://DexyPatch/Assets/op-nums/{opNum}-{suffix}.png";
                 Uri uri = new(resourcePath);
-                var assets = AvaloniaLocator.Current.GetService<IAssetLoader>();
-                return new Bitmap(assets?.Open(uri));
+      ////          var assets = AvaloniaLocator.Current.GetService<IAssetLoader>();
+                return new Bitmap(AssetLoader.Open(uri));
             }
         }
 

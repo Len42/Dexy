@@ -37,9 +37,12 @@ namespace Dexy.DexyPatch.Views
         /// </summary>
         private void OnSerialTextLogChanging()
         {
+            // TODO: FUBAR
+            /*
             isSerialTextLogScrollerAtEnd =
                 (serialTextLogScroller.Offset.Y
                     == (serialTextLogScroller.Extent.Height - serialTextLogScroller.Bounds.Height));
+            */
         }
 
         /// <summary>

@@ -17,7 +17,7 @@ namespace Dexy.DexyPatch.Views
             WindowState = WindowState.Maximized;
         }
 
-        protected override void OnClosing(CancelEventArgs e)
+        protected override void OnClosing(WindowClosingEventArgs e)
         {
             // Before closing the app, save the data currently being edited.
             // Alternatively, one might want to prompt the user to save the

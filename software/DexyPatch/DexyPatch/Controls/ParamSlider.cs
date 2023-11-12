@@ -7,7 +7,7 @@ namespace Dexy.DexyPatch.Controls
     /// <summary>
     /// Just a subclass of Slider with different default settings
     /// </summary>
-    public class ParamSlider : Slider, IStyleable
+    public class ParamSlider : Slider //, IStyleable
     {
         public ParamSlider()
         {
@@ -20,6 +20,8 @@ namespace Dexy.DexyPatch.Controls
             HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center;
         }
 
-        Type IStyleable.StyleKey => typeof(Slider);
+        protected override Type StyleKeyOverride => typeof(Slider);
+
+        //// Type IStyleable.StyleKey => typeof(Slider);
     }
 }

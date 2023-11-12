@@ -185,6 +185,7 @@ namespace Dexy.DexyPatch.Services
 #endif
         }
 
+#if false
         /// <summary>
         /// Get a list of file types, including the given file type, to display in the dialog
         /// </summary>
@@ -198,6 +199,7 @@ namespace Dexy.DexyPatch.Services
                 new () { Name = "All files", Extensions = new() { "*" } }
             };
         }
+#endif
 
         /// <summary>
         /// Get the main window of the application
