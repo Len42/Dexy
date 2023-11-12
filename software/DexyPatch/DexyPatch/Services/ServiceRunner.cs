@@ -24,7 +24,9 @@ namespace Dexy.DexyPatch.Services
             services.Add(Service<ISettingsManager>.Initialize<SettingsManager>());
             services.Add(Service<IDexyDevice>.Initialize<DexyDevice>());
             services.Add(Service<IDataManager>.Initialize<DataManager>());
-            services.Add(Service<IMessageBoxService>.Initialize<MessageBoxService>());
+            // DEBUG
+            //services.Add(Service<IMessageBoxService>.Initialize<MessageBoxService>());
+            services.Add(Service<IMessageBoxService>.Initialize<StubMessageBoxService>());
             services.Add(Service<ILiveUpdater>.Initialize<LiveUpdater>());
         }
 
