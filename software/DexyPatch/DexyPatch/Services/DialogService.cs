@@ -146,8 +146,11 @@ namespace Dexy.DexyPatch.Services
             }
         }
 
-        public async Task<string?> OpenFileDialog(string? initPathname, string fileTypeName, string fileTypeExt)
+        public /*async*/ Task<string?> OpenFileDialog(string? initPathname, string fileTypeName, string fileTypeExt)
         {
+            // TODO: must be redone for version 11
+            throw new NotImplementedException();
+#if false
             var dialogBox = new OpenFileDialog() {
                 Title = "Load File",
                 Directory = Path.GetDirectoryName(initPathname),
@@ -163,18 +166,23 @@ namespace Dexy.DexyPatch.Services
             } else {
                 return result[0];
             }
+#endif
         }
 
-        public async Task<string?> SaveFileDialog(string? initPathname, string fileTypeName, string fileTypeExt)
+        public /*async*/ Task<string?> SaveFileDialog(string? initPathname, string fileTypeName, string fileTypeExt)
         {
+            // TODO: must be redone for version 11
+            throw new NotImplementedException();
+#if false
             var dialogBox = new SaveFileDialog() {
                 Title = "Save File",
                 Directory = Path.GetDirectoryName(initPathname),
                 InitialFileName = "New File", // not Path.GetFileName(initPathname),
                 DefaultExtension ="dexy",
                 Filters = GetFileFilterList(fileTypeName, fileTypeExt)
-};
+            };
             return await dialogBox.ShowAsync(MainWindow!);
+#endif
         }
 
         /// <summary>
