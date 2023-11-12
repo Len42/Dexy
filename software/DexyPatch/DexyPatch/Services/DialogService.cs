@@ -21,9 +21,9 @@ namespace Dexy.DexyPatch.Services
     /// <remarks>
     /// Uses the MessageBox.Avalonia package
     /// </remarks>
-    public class MessageBoxService : IMessageBoxService
+    public class DialogService : IDialogService
     {
-        public MessageBoxService() { }
+        public DialogService() { }
 
         public void Terminate() { }
 

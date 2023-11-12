@@ -35,8 +35,8 @@ namespace Dexy.DexyPatch.ViewModels
         /// <summary><see cref="Dexy.DexyPatch.Services.IDexyDevice"/> service</summary>
         private readonly IDexyDevice dexyDevice = Service<IDexyDevice>.Get();
 
-        /// <summary><see cref="Dexy.DexyPatch.Services.IMessageBoxService"/> service</summary>
-        private readonly IMessageBoxService messageBoxService = Service<IMessageBoxService>.Get();
+        /// <summary><see cref="Dexy.DexyPatch.Services.IDialogService"/> service</summary>
+        private readonly IDialogService messageBoxService = Service<IDialogService>.Get();
 
         /// <summary>
         /// Command handler for the "Hide" button - Hides the <see cref="Dexy.DexyPatch.Views.DexyView"/> pane

@@ -41,8 +41,8 @@ namespace Dexy.DexyPatch.ViewModels
         /// <summary><see cref="Dexy.DexyPatch.Services.ILiveUpdater"/> service</summary>
         private readonly ILiveUpdater liveUpdater = Service<ILiveUpdater>.Get();
 
-        /// <summary><see cref="Dexy.DexyPatch.Services.IMessageBoxService"/> service</summary>
-        private readonly IMessageBoxService messageBoxService = Service<IMessageBoxService>.Get();
+        /// <summary><see cref="Dexy.DexyPatch.Services.IDialogService"/> service</summary>
+        private readonly IDialogService messageBoxService = Service<IDialogService>.Get();
 
         /// <summary><see cref="Dexy.DexyPatch.Services.ISettingsManager"/> service</summary>
         private readonly ISettingsManager settingsManager = Service<ISettingsManager>.Get();

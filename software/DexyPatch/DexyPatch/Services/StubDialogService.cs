@@ -11,7 +11,7 @@ namespace Dexy.DexyPatch.Services
     /// <summary>
     /// Stub implementation of IMessageBoxService
     /// </summary>
-    public class StubMessageBoxService : IMessageBoxService
+    public class StubDialogService : IDialogService
     {
         public void Terminate() { }
 
