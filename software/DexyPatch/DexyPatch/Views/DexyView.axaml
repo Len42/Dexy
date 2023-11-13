@@ -38,7 +38,7 @@
 		</StackPanel>
 		<ContentControl DockPanel.Dock="Top" Content="{Binding DexySettingsVM}"/> <!-- will create a DexySettingsView -->
 		<TextBlock DockPanel.Dock="Top">Dexy output:</TextBlock>
-		<ScrollViewer Name="serialTextLogScroller" Width="280" Margin="0,5,0,0">
+		<ScrollViewer Name="serialScroller" Width="280" Margin="0,5,0,0">
 			<TextBox Text="{Binding SerialTextLog}"
 					 IsReadOnly="True"
 					 TextWrapping="Wrap"
