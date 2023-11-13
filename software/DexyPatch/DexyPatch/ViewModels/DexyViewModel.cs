@@ -107,7 +107,7 @@ namespace Dexy.DexyPatch.ViewModels
         /// Command handler for the "Reboot" button - Reboots the Dexy device
         /// </summary>
         [RelayCommand]
-        private async void RebootCommand()
+        private async void Reboot()
         {
             try {
                 await dexyDevice.RebootDeviceAsync(bootSelMode: false);

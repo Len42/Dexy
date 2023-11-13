@@ -16,7 +16,7 @@
 					Spacing="5"
 					Margin="0,5,0,5">
 			<TextBlock Text="{Binding DexyConnection}" VerticalAlignment="Center"/>
-			<Button Content="Settings" Command="{Binding ShowHideSettings}">
+			<Button Content="Settings" Command="{Binding ShowHideSettingsCommand}">
 				<ToolTip.Tip>Show/hide connection settings</ToolTip.Tip>
 				<PathIcon Data="{StaticResource settings_regular}"/>
 			</Button>
