@@ -149,68 +149,50 @@ namespace Dexy.DexyPatch.Services
 
         public async Task<string?> OpenFileDialog(string? initPathname, string fileTypeName, string fileTypeExt)
         {
-            // TODO: must be redone for version 11
             var storageProvider = GetStorageProvider();
-            var startLocation = (initPathname is null) ? null :
-                await storageProvider.TryGetFolderFromPathAsync(initPathname);
-            var openOptions = new FilePickerOpenOptions() { 
+            var startLocation = await GetFolderLocationFromPath(initPathname);
+            var options = new FilePickerOpenOptions() {
                 Title = "Load File",
                 SuggestedStartLocation = startLocation,
                 AllowMultiple = false,
-                //FileTypeFilter=
+                FileTypeFilter = GetFileFilterList(fileTypeName, fileTypeExt)
             };
-            throw new NotImplementedException();
-#if false
-            var dialogBox = new OpenFileDialog() {
-                Title = "Load File",
-                Directory = Path.GetDirectoryName(initPathname),
-                InitialFileName = Path.GetFileName(initPathname),
-                AllowMultiple = false,
-                Filters = GetFileFilterList(fileTypeName, fileTypeExt)
-            };
-            var result = await dialogBox.ShowAsync(MainWindow!);
-            if (result == null) {
-                return null;
-            } else if (result.Length == 0) {
-                return null;
-            } else {
-                return result[0];
-            }
-#endif
+            IReadOnlyList<IStorageFile> files = await storageProvider.OpenFilePickerAsync(options);
+            return (files.Count > 0) ? GetPathFromStorageFile(files[0]) : null;
         }
 
-        public /*async*/ Task<string?> SaveFileDialog(string? initPathname, string fileTypeName, string fileTypeExt)
+        public async Task<string?> SaveFileDialog(string? initPathname, string fileTypeName, string fileTypeExt)
         {
-            // TODO: must be redone for version 11
-            throw new NotImplementedException();
-#if false
-            var dialogBox = new SaveFileDialog() {
+            var storageProvider = GetStorageProvider();
+            var startLocation = await GetFolderLocationFromPath(initPathname);
+            var options = new FilePickerSaveOptions()
+            {
                 Title = "Save File",
-                Directory = Path.GetDirectoryName(initPathname),
-                InitialFileName = "New File", // not Path.GetFileName(initPathname),
-                DefaultExtension ="dexy",
-                Filters = GetFileFilterList(fileTypeName, fileTypeExt)
+                SuggestedStartLocation = startLocation,
+                SuggestedFileName="New File",
+                DefaultExtension = fileTypeExt,
+                ShowOverwritePrompt = true,
+                FileTypeChoices = GetFileFilterList(fileTypeName, fileTypeExt)
             };
-            return await dialogBox.ShowAsync(MainWindow!);
-#endif
+            IStorageFile? file = await storageProvider.SaveFilePickerAsync(options);
+            return GetPathFromStorageFile(file);
         }
 
-        // TODO: FilePickerFileType 
-#if false
         /// <summary>
         /// Get a list of file types, including the given file type, to display in the dialog
         /// </summary>
         /// <param name="fileTypeName"></param>
         /// <param name="fileTypeExt"></param>
         /// <returns></returns>
-        private static List<FileDialogFilter> GetFileFilterList(string fileTypeName, string fileTypeExt)
+        private static List<FilePickerFileType> GetFileFilterList(string fileTypeName, string fileTypeExt)
         {
-            return new() {
-                new () { Name = fileTypeName, Extensions = new() { fileTypeExt } },
-                new () { Name = "All files", Extensions = new() { "*" } }
+            FilePickerFileType fileType = new(fileTypeName) {
+                Patterns = new[] { Path.ChangeExtension("*", fileTypeExt) },
+                MimeTypes = new[] {"application/octet-stream"}
             };
+            var fileTypes = new List<FilePickerFileType>{ fileType, FilePickerFileTypes.All };
+            return fileTypes;
         }
-#endif
 
         /// <summary>
         /// Get the main window of the application
@@ -228,6 +210,11 @@ namespace Dexy.DexyPatch.Services
             }
         }
 
+        /// <summary>
+        /// Get the Avalonia storage provider
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         private static IStorageProvider GetStorageProvider()
         {
             var storageProvider = MainWindow?.StorageProvider;
@@ -235,6 +222,32 @@ namespace Dexy.DexyPatch.Services
                 throw new Exception("Cannot get IStorageProvider");
             }
             return storageProvider;
+        }
+
+        /// <summary>
+        /// Get the folder containing the given file
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        private static Task<IStorageFolder?> GetFolderLocationFromPath(string? path)
+        {
+            if (path is not null) {
+                var stDir = Path.GetDirectoryName(path);
+                if (stDir is not null) {
+                    return GetStorageProvider().TryGetFolderFromPathAsync(stDir);
+                }
+            }
+            return Task.FromResult<IStorageFolder?>(null);
+        }
+
+        /// <summary>
+        /// Get the file pathname corresponding to the given IStorageFile
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns></returns>
+        private static string? GetPathFromStorageFile(IStorageFile? file)
+        {
+            return (file is null) ? null : file.Path.LocalPath;
         }
     }
 }
