@@ -57,7 +57,6 @@ namespace Dexy.DexyPatch.Views
         {
             if (algorithmIcons == null) {
                 algorithmIcons = new List<Bitmap>();
-        ////        var assets = AvaloniaLocator.Current.GetService<IAssetLoader>();
                 for (uint i = 0; i < DexyDefs.numAlgorithms; ++i) {
                     string resourcePath = $"avares://DexyPatch/Assets/algorithms/algo-{i+1}.png";
                     Uri uri = new(resourcePath);

@@ -7,7 +7,7 @@ namespace Dexy.DexyPatch.Controls
     /// <summary>
     /// Just a subclass of Slider with different default settings
     /// </summary>
-    public class ParamSlider : Slider //, IStyleable
+    public class ParamSlider : Slider
     {
         public ParamSlider()
         {
@@ -21,7 +21,5 @@ namespace Dexy.DexyPatch.Controls
         }
 
         protected override Type StyleKeyOverride => typeof(Slider);
-
-        //// Type IStyleable.StyleKey => typeof(Slider);
     }
 }
