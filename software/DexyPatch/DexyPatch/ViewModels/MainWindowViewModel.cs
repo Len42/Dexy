@@ -7,7 +7,7 @@ using System.Xml.Linq;
 using Avalonia;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using MessageBox.Avalonia.Enums;
+using MsBox.Avalonia.Enums;
 using Dexy.DexyPatch.Models;
 using Dexy.DexyPatch.Services;
 using Dexy.DexyPatch.Utils.PatchChanges;
@@ -41,8 +41,8 @@ namespace Dexy.DexyPatch.ViewModels
         /// <summary><see cref="Dexy.DexyPatch.Services.ILiveUpdater"/> service</summary>
         private readonly ILiveUpdater liveUpdater = Service<ILiveUpdater>.Get();
 
-        /// <summary><see cref="Dexy.DexyPatch.Services.IMessageBoxService"/> service</summary>
-        private readonly IMessageBoxService messageBoxService = Service<IMessageBoxService>.Get();
+        /// <summary><see cref="Dexy.DexyPatch.Services.IDialogService"/> service</summary>
+        private readonly IDialogService messageBoxService = Service<IDialogService>.Get();
 
         /// <summary><see cref="Dexy.DexyPatch.Services.ISettingsManager"/> service</summary>
         private readonly ISettingsManager settingsManager = Service<ISettingsManager>.Get();
@@ -216,7 +216,7 @@ namespace Dexy.DexyPatch.ViewModels
         /// Load a new <see cref="Dexy.DexyPatch.Models.PatchBank"/> with a set of default patches
         /// </summary>
         [RelayCommand]
-        private async void LoadDefaultPatchBank()
+        private async Task LoadDefaultPatchBank()
         {
             if (await CheckSaveModel()) {
                 try {
@@ -238,7 +238,7 @@ namespace Dexy.DexyPatch.ViewModels
         /// Load a <see cref="Dexy.DexyPatch.Models.PatchBank"/> from a file
         /// </summary>
         [RelayCommand]
-        private async void LoadFile()
+        private async Task LoadFile()
         {
             if (await CheckSaveModel()) {
                 var savedPathname = settingsManager.Load<LastPatchBankFile>();
@@ -310,7 +310,7 @@ namespace Dexy.DexyPatch.ViewModels
         /// Upload the patchbank from the connected Dexy module
         /// </summary>
         [RelayCommand]
-        private async void UploadPatchBank()
+        private async Task UploadPatchBank()
         {
             if (await CheckSaveModel()) {
                 try {
@@ -338,7 +338,7 @@ namespace Dexy.DexyPatch.ViewModels
         /// Download the currently <see cref="Dexy.DexyPatch.Models.PatchBank"/> to the Dexy module
         /// </summary>
         [RelayCommand]
-        private async void DownloadPatchBank()
+        private async Task DownloadPatchBank()
         {
             if (CanDownloadPatchBank) {
                 ButtonResult result = 

@@ -37,7 +37,7 @@ namespace Dexy.DexyPatch.Views
             base.OnInitialized();
 
             // Initialize the list of icons used in the Algorithm dropdown
-            algorithm.Items = GetAlgorithmIconList();
+            algorithm.ItemsSource = GetAlgorithmIconList();
 
             // Must initialize the Algorithm list selection here, otherwise it
             // doesn't get picked up.
@@ -57,11 +57,10 @@ namespace Dexy.DexyPatch.Views
         {
             if (algorithmIcons == null) {
                 algorithmIcons = new List<Bitmap>();
-                var assets = AvaloniaLocator.Current.GetService<IAssetLoader>();
                 for (uint i = 0; i < DexyDefs.numAlgorithms; ++i) {
                     string resourcePath = $"avares://DexyPatch/Assets/algorithms/algo-{i+1}.png";
                     Uri uri = new(resourcePath);
-                    algorithmIcons.Add(new(assets?.Open(uri)));
+                    algorithmIcons.Add(new(AssetLoader.Open(uri)));
                 }
             }
             return algorithmIcons;

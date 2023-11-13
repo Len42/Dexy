@@ -46,7 +46,7 @@
 		<!-- List of patches in the patchbank -->
 		<ListBox Name="patchListBox"
 				 DockPanel.Dock="Left"
-				 Items="{Binding PatchList}"
+				 ItemsSource="{Binding PatchList}"
 				 SelectedIndex="{Binding SelectedPatch}"
 				 SelectionMode="Single"
 				 Width="150"/>

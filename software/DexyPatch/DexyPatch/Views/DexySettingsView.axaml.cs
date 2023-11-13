@@ -13,7 +13,7 @@ namespace Dexy.DexyPatch.Views
         {
             InitializeComponent();
             // Fill the comm port listbox
-            portListbox.Items = CommPort.GetPortNames();
+            portListbox.ItemsSource = CommPort.GetPortNames();
         }
     }
 }

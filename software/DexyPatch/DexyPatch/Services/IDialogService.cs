@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MessageBox.Avalonia.Enums;
+using MsBox.Avalonia.Enums;
 
 namespace Dexy.DexyPatch.Services
 {
     /// <summary>
     /// Interface for displaying various message boxes and dialogs
     /// </summary>
-    interface IMessageBoxService : IService
+    interface IDialogService : IService
     {
         /// <summary>
         /// Display an error message box

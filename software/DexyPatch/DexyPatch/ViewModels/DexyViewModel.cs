@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using MessageBox.Avalonia.Enums;
+using MsBox.Avalonia.Enums;
 using Dexy.DexyPatch.Services;
 using Dexy.DexyPatch.Utils;
 
@@ -35,8 +35,8 @@ namespace Dexy.DexyPatch.ViewModels
         /// <summary><see cref="Dexy.DexyPatch.Services.IDexyDevice"/> service</summary>
         private readonly IDexyDevice dexyDevice = Service<IDexyDevice>.Get();
 
-        /// <summary><see cref="Dexy.DexyPatch.Services.IMessageBoxService"/> service</summary>
-        private readonly IMessageBoxService messageBoxService = Service<IMessageBoxService>.Get();
+        /// <summary><see cref="Dexy.DexyPatch.Services.IDialogService"/> service</summary>
+        private readonly IDialogService messageBoxService = Service<IDialogService>.Get();
 
         /// <summary>
         /// Command handler for the "Hide" button - Hides the <see cref="Dexy.DexyPatch.Views.DexyView"/> pane
@@ -107,7 +107,7 @@ namespace Dexy.DexyPatch.ViewModels
         /// Command handler for the "Reboot" button - Reboots the Dexy device
         /// </summary>
         [RelayCommand]
-        private async void RebootCommand()
+        private async Task Reboot()
         {
             try {
                 await dexyDevice.RebootDeviceAsync(bootSelMode: false);
@@ -120,7 +120,7 @@ namespace Dexy.DexyPatch.ViewModels
         /// Command handler for the "Download" button - Download new firmware to the Dexy device
         /// </summary>
         [RelayCommand]
-        private async void DownloadFirmware()
+        private async Task DownloadFirmware()
         {
             // Get the previously-used firmware filename
             var settingsManager = Service<ISettingsManager>.Get();

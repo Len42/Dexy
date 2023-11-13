@@ -1,5 +1,7 @@
 using System;
 using Avalonia.Controls;
+using Avalonia.Threading;
+using Dexy.DexyPatch.Utils;
 using Dexy.DexyPatch.ViewModels;
 
 namespace Dexy.DexyPatch.Views
@@ -16,7 +18,7 @@ namespace Dexy.DexyPatch.Views
         public DexyView()
         {
             InitializeComponent();
-            serialTextLogScroller.ScrollChanged += OnSerialTextLogScrollerScrollChanged;
+            serialScroller.ScrollChanged += OnSerialScrollerScrollChanged;
         }
 
         protected override void OnDataContextChanged(EventArgs e)
@@ -28,31 +30,37 @@ namespace Dexy.DexyPatch.Views
         }
 
         /// <summary>
-        /// Is the <see cref="serialTextLogScroller"/> control currently scrolled to the very end?
+        /// Is the <see cref="serialScroller"/> control currently scrolled to the very end?
         /// </summary>
-        bool isSerialTextLogScrollerAtEnd = false;
+        bool isserialScrollerAtEnd = false;
 
         /// <summary>
-        /// Update <see cref="isSerialTextLogScrollerAtEnd"/> when text is added to the serial text log
+        /// Update <see cref="isserialScrollerAtEnd"/> when text is added to the serial text log
         /// </summary>
-        private void OnSerialTextLogChanging()
+        private async void OnSerialTextLogChanging()
         {
-            isSerialTextLogScrollerAtEnd =
-                (serialTextLogScroller.Offset.Y
-                    == (serialTextLogScroller.Extent.Height - serialTextLogScroller.Bounds.Height));
+            // serialScroller must be accessed on the UI thread
+            isserialScrollerAtEnd =
+                await Dispatcher.UIThread.InvokeAsync(
+                    () => (serialScroller.Offset.Y
+                        == (serialScroller.Extent.Height - serialScroller.Bounds.Height)),
+                    DispatcherPriority.Send);
         }
 
         /// <summary>
-        /// Keep the <see cref="serialTextLogScroller"/> control scrolled to the end,
+        /// Keep the <see cref="serialScroller"/> control scrolled to the end,
         /// if that's where it was.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void OnSerialTextLogScrollerScrollChanged(object? sender, ScrollChangedEventArgs e)
+        private async void OnSerialScrollerScrollChanged(object? sender, ScrollChangedEventArgs e)
         {
-            if (isSerialTextLogScrollerAtEnd) {
-                isSerialTextLogScrollerAtEnd = false;
-                serialTextLogScroller.ScrollToEnd();
+            if (isserialScrollerAtEnd) {
+                isserialScrollerAtEnd = false;
+                // serialScroller must be accessed on the UI thread
+                await Dispatcher.UIThread.InvokeAsync(
+                    () => serialScroller.ScrollToEnd(),
+                    DispatcherPriority.Send);
             }
         }
     }

@@ -22,6 +22,7 @@ namespace Dexy.DexyPatch
                 BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
             } catch(Exception ex) {
                 // last-ditch exception handler - log to file
+                ErrorLog.TraceError(ex);
                 ErrorLog.WriteError(ex);
                 throw;
             }

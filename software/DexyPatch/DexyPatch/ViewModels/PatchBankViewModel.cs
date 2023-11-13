@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Avalonia.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using MessageBox.Avalonia.Enums;
+using MsBox.Avalonia.Enums;
 using Dexy.DexyPatch.Models;
 using Dexy.DexyPatch.Services;
 using Dexy.DexyPatch.Views;
@@ -159,7 +159,7 @@ namespace Dexy.DexyPatch.ViewModels
         private async void ReplaceSelectedPatch(Patch patch)
         {
             if (PatchBank != null && 0 <= SelectedPatch && SelectedPatch < DexyDefs.numPatches) {
-                ButtonResult result = await Service<IMessageBoxService>.Get().AskYesNo(
+                ButtonResult result = await Service<IDialogService>.Get().AskYesNo(
                     "Paste patch?",
                     string.Format("Replace patch \"{0}\"?", PatchList?[SelectedPatch]?.Trim() ?? ""));
                 if (result == ButtonResult.Yes) {
