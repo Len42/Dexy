@@ -12,6 +12,7 @@ using MsBox.Avalonia.Dto;
 using MsBox.Avalonia.Enums;
 using MsBox.Avalonia.Models;
 using Dexy.DexyPatch.Utils;
+using Avalonia.Platform.Storage;
 
 namespace Dexy.DexyPatch.Services
 {
@@ -146,9 +147,18 @@ namespace Dexy.DexyPatch.Services
             }
         }
 
-        public /*async*/ Task<string?> OpenFileDialog(string? initPathname, string fileTypeName, string fileTypeExt)
+        public async Task<string?> OpenFileDialog(string? initPathname, string fileTypeName, string fileTypeExt)
         {
             // TODO: must be redone for version 11
+            var storageProvider = GetStorageProvider();
+            var startLocation = (initPathname is null) ? null :
+                await storageProvider.TryGetFolderFromPathAsync(initPathname);
+            var openOptions = new FilePickerOpenOptions() { 
+                Title = "Load File",
+                SuggestedStartLocation = startLocation,
+                AllowMultiple = false,
+                //FileTypeFilter=
+            };
             throw new NotImplementedException();
 #if false
             var dialogBox = new OpenFileDialog() {
@@ -185,6 +195,7 @@ namespace Dexy.DexyPatch.Services
 #endif
         }
 
+        // TODO: FilePickerFileType 
 #if false
         /// <summary>
         /// Get a list of file types, including the given file type, to display in the dialog
@@ -215,6 +226,15 @@ namespace Dexy.DexyPatch.Services
                     return null;
                 }
             }
+        }
+
+        private static IStorageProvider GetStorageProvider()
+        {
+            var storageProvider = MainWindow?.StorageProvider;
+            if(storageProvider is null) {
+                throw new Exception("Cannot get IStorageProvider");
+            }
+            return storageProvider;
         }
     }
 }
