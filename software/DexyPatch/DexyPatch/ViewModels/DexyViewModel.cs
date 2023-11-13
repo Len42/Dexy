@@ -107,7 +107,7 @@ namespace Dexy.DexyPatch.ViewModels
         /// Command handler for the "Reboot" button - Reboots the Dexy device
         /// </summary>
         [RelayCommand]
-        private async void Reboot()
+        private async Task Reboot()
         {
             try {
                 await dexyDevice.RebootDeviceAsync(bootSelMode: false);
@@ -120,7 +120,7 @@ namespace Dexy.DexyPatch.ViewModels
         /// Command handler for the "Download" button - Download new firmware to the Dexy device
         /// </summary>
         [RelayCommand]
-        private async void DownloadFirmware()
+        private async Task DownloadFirmware()
         {
             // Get the previously-used firmware filename
             var settingsManager = Service<ISettingsManager>.Get();
