@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
-using MessageBox.Avalonia;
-using MessageBox.Avalonia.DTO;
-using MessageBox.Avalonia.Enums;
-using MessageBox.Avalonia.Models;
+using MsBox.Avalonia;
+using MsBox.Avalonia.Dto;
+using MsBox.Avalonia.Enums;
+using MsBox.Avalonia.Models;
 using Dexy.DexyPatch.Utils;
 
 namespace Dexy.DexyPatch.Services
@@ -19,7 +19,7 @@ namespace Dexy.DexyPatch.Services
     /// Service for displaying various message boxes and dialogs
     /// </summary>
     /// <remarks>
-    /// Uses the MessageBox.Avalonia package
+    /// Uses the MsBox.Avalonia package
     /// </remarks>
     public class DialogService : IDialogService
     {
@@ -33,7 +33,7 @@ namespace Dexy.DexyPatch.Services
             if (ex != null) {
                 stError = $"{ex.Message} ({ex.GetType().Name})";
             }
-            var messageBox = MessageBoxManager.GetMessageBoxStandardWindow(
+            var messageBox = MessageBoxManager.GetMessageBoxStandard(
                 new MessageBoxStandardParams {
                     ContentTitle = $"ERROR - {Application.Current?.Name}",
                     ContentHeader = message,
@@ -48,12 +48,12 @@ namespace Dexy.DexyPatch.Services
             if (MainWindow == null) {
                 throw new InvalidOperationException("No parent window for dialog");
             }
-            await messageBox.ShowDialog(MainWindow);
+            await messageBox.ShowAsPopupAsync(MainWindow);
         }
 
         public async Task<ButtonResult> AskYesNo(string header, string? message)
         {
-            var messageBox = MessageBoxManager.GetMessageBoxStandardWindow(
+            var messageBox = MessageBoxManager.GetMessageBoxStandard(
                 new MessageBoxStandardParams {
                     ContentTitle = Application.Current?.Name,
                     ContentHeader = header,
@@ -68,7 +68,7 @@ namespace Dexy.DexyPatch.Services
             if (MainWindow == null) {
                 throw new InvalidOperationException("No parent window for dialog");
             }
-            return await messageBox.ShowDialog(MainWindow);
+            return await messageBox.ShowAsPopupAsync(MainWindow);
         }
 
         public async Task<ButtonResult> AskSaveChanges(string? name)
@@ -76,7 +76,7 @@ namespace Dexy.DexyPatch.Services
             const string btnYes = "Save";
             const string btnNo = "Discard Changes";
             const string btnCancel = "Cancel";
-            var messageBox = MessageBoxManager.GetMessageBoxCustomWindow(
+            var messageBox = MessageBoxManager.GetMessageBoxCustom(
                 new MessageBoxCustomParams {
                     ContentTitle = Application.Current?.Name,
                     ContentHeader = "Save changes?",
@@ -95,7 +95,7 @@ namespace Dexy.DexyPatch.Services
             if (MainWindow == null) {
                 throw new InvalidOperationException("No parent window for dialog");
             }
-            string stResult = await messageBox.ShowDialog(MainWindow);
+            string stResult = await messageBox.ShowAsPopupAsync(MainWindow);
             switch (stResult) {
                 case btnYes:
                     return ButtonResult.Yes;
@@ -114,7 +114,7 @@ namespace Dexy.DexyPatch.Services
             const string btnNo = "Select File";
             const string btnCancel = "Cancel";
             const int maxPathnameChars = 40;
-            var messageBox = MessageBoxManager.GetMessageBoxCustomWindow(
+            var messageBox = MessageBoxManager.GetMessageBoxCustom(
                 new MessageBoxCustomParams {
                     ContentTitle = Application.Current?.Name,
                     ContentHeader = "Download firmware file to Dexy module?",
@@ -133,7 +133,7 @@ namespace Dexy.DexyPatch.Services
             if (MainWindow == null) {
                 throw new InvalidOperationException("No parent window for dialog");
             }
-            string stResult = await messageBox.ShowDialog(MainWindow);
+            string stResult = await messageBox.ShowAsPopupAsync(MainWindow);
             switch (stResult) {
                 case btnYes:
                     return ButtonResult.Yes;

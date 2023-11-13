@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MessageBox.Avalonia.Enums;
+using MsBox.Avalonia.Enums;
 
 namespace Dexy.DexyPatch.Services
 {

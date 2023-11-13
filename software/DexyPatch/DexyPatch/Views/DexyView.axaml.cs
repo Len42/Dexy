@@ -30,7 +30,7 @@ namespace Dexy.DexyPatch.Views
         /// <summary>
         /// Is the <see cref="serialTextLogScroller"/> control currently scrolled to the very end?
         /// </summary>
-        bool isSerialTextLogScrollerAtEnd = false;
+        //bool isSerialTextLogScrollerAtEnd = false;
 
         /// <summary>
         /// Update <see cref="isSerialTextLogScrollerAtEnd"/> when text is added to the serial text log

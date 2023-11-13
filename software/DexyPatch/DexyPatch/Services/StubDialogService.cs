@@ -1,5 +1,5 @@
 ﻿using Dexy.DexyPatch.Utils;
-using MessageBox.Avalonia.Enums;
+using MsBox.Avalonia.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;

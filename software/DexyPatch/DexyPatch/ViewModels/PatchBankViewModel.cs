@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Avalonia.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using MessageBox.Avalonia.Enums;
+using MsBox.Avalonia.Enums;
 using Dexy.DexyPatch.Models;
 using Dexy.DexyPatch.Services;
 using Dexy.DexyPatch.Views;
