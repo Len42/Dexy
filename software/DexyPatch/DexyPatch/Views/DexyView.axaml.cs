@@ -53,10 +53,13 @@ namespace Dexy.DexyPatch.Views
         /// <param name="e"></param>
         private void OnSerialTextLogScrollerScrollChanged(object? sender, ScrollChangedEventArgs e)
         {
+            // TODO: FUBAR
+            /*
             if (isSerialTextLogScrollerAtEnd) {
                 isSerialTextLogScrollerAtEnd = false;
                 serialTextLogScroller.ScrollToEnd();
             }
+            */
         }
     }
 }
