@@ -21,9 +21,14 @@ namespace Dexy.DexyPatch.ViewModels
     {
         public MainWindowViewModel()
         {
-            LoadInitialPatchBank();
+            Initialize();
+        }
 
-            dexyVM = new(this); // This will initialize the DexyView as well
+        private async void Initialize()
+        {
+            await LoadInitialPatchBank();
+
+            DexyVM = new(this); // This will initialize the DexyView as well
 
             // Keep track of whether the Dexy device is connected
             IsDexyConnected = dexyDevice.IsConnected;
@@ -70,7 +75,7 @@ namespace Dexy.DexyPatch.ViewModels
         /// ViewModel for the contained Dexy device view
         /// </summary>
         [ObservableProperty]
-        private DexyViewModel? dexyVM;
+        private DexyViewModel? dexyVM = null;
 
         /// <summary>
         /// Is the Dexy device currently connected?
@@ -202,7 +207,7 @@ namespace Dexy.DexyPatch.ViewModels
         /// <summary>
         /// Load the <see cref="Dexy.DexyPatch.Models.PatchBank"/> to be edited at app startup
         /// </summary>
-        private async void LoadInitialPatchBank()
+        private async Task LoadInitialPatchBank()
         {
             PatchBank patchBankInit;
             PatchDataSource dataSourceInit;
