@@ -135,6 +135,7 @@ level_t Envelope::genNextOutput()
     // Note: Each doStageFunction() is responsible for incrementing progress.
     // That's because lookupInterpolate() takes care of it.
     (this->*doStageFunction)();
+    // TODO: level scaling - is this the place to do it?
     return level;
 }
 
@@ -175,7 +176,7 @@ void Envelope::initStage<Envelope::Stage::Delay>()
     // of starting at the beginning, to give a gentler decay.
     progress_t index = progress_t(level) << 8;
     progress = 512 * DecayStartTable::lookupInterpolate(&index, 0);
-    increment = delay;
+    increment = delay; // TODO: rate scaling
     //level starts at its current value and goes down from there
 }
 
@@ -204,7 +205,7 @@ void Envelope::initStage<Envelope::Stage::Attack>()
     progress_t index = progress_t(level) << 8;
     progress = 512 * AttackStartTable::lookupInterpolate(&index, 0);
     //level starts at its current value and goes up from there
-    increment = attack;
+    increment = attack; // TODO: rate scaling
 }
 
 template<>
@@ -227,7 +228,7 @@ void Envelope::initStage<Envelope::Stage::Decay>()
     // of starting at the beginning, to give a gentler decay.
     progress_t index = progress_t(level - sustain) << 8;
     progress = 512 * DecayStartTable::lookupInterpolate(&index, 0);
-    increment = decay;
+    increment = decay; // TODO: rate scaling
     //level starts at its current value
 }
 
@@ -274,7 +275,7 @@ void Envelope::initStage<Envelope::Stage::Release>()
     progress_t index = progress_t(level) << 8;
     progress = 512 * DecayStartTable::lookupInterpolate(&index, 0);
     //level starts at its current value and goes down from there
-    increment = release;
+    increment = release; // TODO: rate scaling
 }
 
 template<>

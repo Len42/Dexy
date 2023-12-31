@@ -67,6 +67,7 @@ output_t Operator::genNextOutput(output_t freqMod, output_t ampMod)
     // Apply envelope to amplitude
     if (useEnvelope) {
         output = adjustOutputLevel(output, env.genNextOutput());
+        // TODO: level scaling - is this the place to do it?
     }
     // Apply amplitude modulation
     level_t level = max_level_t;

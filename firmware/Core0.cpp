@@ -76,6 +76,7 @@ void onTimerInterrupt()
     adcPitchPrev = getAndSet(adcPitch, AdcInput::adcResult_t((adcPitch + adcPitchPrev) / 2));
     Synth::setNotePitch(AdcInput::getIncrementForAdcValue(adcPitch));
     Synth::setTimbreMod(AdcInput::getTimbreModForAdcValue(adcBuf[Gpio::adcInputTimbre]));
+    // TODO: set level scaling value here?
 }
 
 } } // namespace Core0
