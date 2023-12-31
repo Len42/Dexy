@@ -4,6 +4,7 @@ namespace Dexy {
 
 /// @brief Table lookup and interpolation for waveforms and envelopes
 /// @details Multiple WaveTable classes can be defined, each using a different lookup table.
+/// The lookup table is defined by a static DataTable object.
 /// @tparam VALUE_T Type of values in the wavetable
 /// @tparam NUM_VALUES Number of values in the wavetable
 /// @tparam FUNC_CALC1 Function/lambda to calculate one table entry

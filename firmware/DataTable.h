@@ -18,14 +18,13 @@ namespace Dexy {
 /// Acknowledgements
 /// ----------------
 /// Ashley Roll - https://github.com/AshleyRoll/cppcon21/blob/main/code/table_gen_1.cpp
-///
 /// Jason Turner - https://tinyurl.com/constexpr2021
 template<typename VALUE_T, std::size_t NUM_VALUES, VALUE_T FUNC_CALC1(std::size_t index, std::size_t numValues)>
 class DataTable
 {
 public:
     /// @brief Ctor initializes dataArray using FUNC_CALC1, at compile time
-    constexpr DataTable()
+    consteval DataTable()
     {
         for (std::size_t index = 0; index < NUM_VALUES; ++index) {
             dataArray[index] = FUNC_CALC1(index, NUM_VALUES);
@@ -44,7 +43,7 @@ public:
     /// @return The underlying array
     const auto& getArrayConst() const { return dataArray; }
 
-    /// @brief Array subscript operator
+    /// @brief Array subscript operator (non-const overload)
     /// @param index 
     /// @return Value at index
     constexpr VALUE_T& operator[](std::size_t index) { return dataArray[index]; }
@@ -52,7 +51,7 @@ public:
     /// @brief Array subscript operator (const overload)
     /// @param index 
     /// @return Value at index
-    constexpr const VALUE_T& operator[](std::size_t index) const { return dataArray[index]; }
+    constexpr VALUE_T operator[](std::size_t index) const { return dataArray[index]; }
 
 private:
     /// @brief Fixed-size array of values that is initialized at compile time

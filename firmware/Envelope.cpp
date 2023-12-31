@@ -31,7 +31,6 @@ static constexpr Envelope::rate_t rateFromParam(param_t param)
     return expRateMap[param];
 }
 
-
 /// @brief Convert an envelope's attack setting (EnvParams::attack) to a rate_t
 /// @details Attack rates are somewhat faster than decay/release rates, in keeping with the DX7.
 static constexpr Envelope::rate_t attackRateFromParam(param_t param)
