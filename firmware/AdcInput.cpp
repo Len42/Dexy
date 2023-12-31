@@ -44,55 +44,42 @@ static constexpr int linearizeAdcInput(int adcValue)
     return adcValue + adcAdjust;
 }
 
-/// @brief Helper for initializing adcToIncrementMap
-/// @param index Lookup table index corresponding to a pitch CV
-/// @return Wavetable increment value for the specified pitch CV
-/// @note This relies on math functions (e.g. std::pow()) being declared
-/// constexpr, which they are in gcc but not in other compilers or the
-/// C++20/23 standard. :(
-static constexpr auto adcToIncrement(std::size_t index, std::size_t /*unused*/)
-{
-    // Table is indexed by the ADC input value, representing pitch CV
-    int adcValue = index;
-    // ADC input adjustment
-    adcValue = linearizeAdcInput(adcValue);
-    // ADC input to pitch CV
-    // NOTE: ADC might not read all the way up to 3.3V (I measured 3.275V on mine).
-    // Set CV voltage divider and adcValueMax appropriately.
-    constexpr double adcValueMin = 26; //17;        // ADC reading with 0V input
-    constexpr double adcValueMax = 3626; //4128.4;  // ADC reading with cvMax input
-    constexpr double cvMax = 9.0; // 10.0;          // Max CV used for calibration
-    double cv = (adcValue - adcValueMin) * cvMax / (adcValueMax - adcValueMin);
-    // pitch CV to frequency
-    constexpr double freqHzBase = 16.3516;
-    constexpr double freqHzAdj = 0; // 0.15;
-    double freqHz = (freqHzBase + freqHzAdj) * std::pow(2.0, cv);
-    // frequency to wavetable increment
-    double waveIncrement = SineWave::getIncrementForHz(freqHz);
-    return phase_t(std::round(waveIncrement));
-}
-
 /// @brief Lookup table to map an ADC input value to a note pitch, expressed as
 /// a wavetable increment value (phase_t).
-static constexpr DataTable<phase_t, maxAdcValue+1, adcToIncrement> adcToIncrementMap;
-
-/// @brief Helper for initializing adcToTimbreModMap
-/// @param index Lookup table index corresponding to a timbre mod CV
-/// @return Wavetable increment value for the specified CV
-static constexpr auto adcToTimbreMod(std::size_t index, std::size_t /*unused*/)
-{
-    int adcValue = index;
-    adcValue = linearizeAdcInput(adcValue);
-    constexpr double adcValueMin = 31.5;    // ADC min reading
-    constexpr double adcValueMax = 4007.3;  // ADC max reading
-    double out = (adcValue - adcValueMin) / (adcValueMax - adcValueMin)
-        * (max_output_t - min_output_t) + min_output_t;
-    out = std::min(std::max(out, double(min_output_t)), double(max_output_t));
-    return output_t(out);
-}
+static constexpr DataTable<phase_t, maxAdcValue+1,
+    [](std::size_t index, [[maybe_unused]] std::size_t numValues) {
+        // Table is indexed by the ADC input value, representing pitch CV
+        int adcValue = index;
+        // ADC input adjustment
+        adcValue = linearizeAdcInput(adcValue);
+        // ADC input to pitch CV
+        // NOTE: ADC might not read all the way up to 3.3V (I measured 3.275V on mine).
+        // Set CV voltage divider and adcValueMax appropriately.
+        constexpr double adcValueMin = 26; //17;        // ADC reading with 0V input
+        constexpr double adcValueMax = 3626; //4128.4;  // ADC reading with cvMax input
+        constexpr double cvMax = 9.0; // 10.0;          // Max CV used for calibration
+        double cv = (adcValue - adcValueMin) * cvMax / (adcValueMax - adcValueMin);
+        // pitch CV to frequency
+        constexpr double freqHzBase = 16.3516;
+        constexpr double freqHzAdj = 0; // 0.15;
+        double freqHz = (freqHzBase + freqHzAdj) * std::pow(2.0, cv);
+        // frequency to wavetable increment
+        double waveIncrement = SineWave::getIncrementForHz(freqHz);
+        return phase_t(std::round(waveIncrement));
+    }> adcToIncrementMap;
 
 /// @brief Lookup table to map an ADC input value to a timbre modulation value
-static constexpr DataTable<output_t, maxAdcValue+1, adcToTimbreMod> adcToTimbreModMap;
+static constexpr DataTable<output_t, maxAdcValue+1,
+    [](std::size_t index, [[maybe_unused]] std::size_t numValues) {
+        int adcValue = index;
+        adcValue = linearizeAdcInput(adcValue);
+        constexpr double adcValueMin = 31.5;    // ADC min reading
+        constexpr double adcValueMax = 4007.3;  // ADC max reading
+        double out = (adcValue - adcValueMin) / (adcValueMax - adcValueMin)
+            * (max_output_t - min_output_t) + min_output_t;
+        out = std::min(std::max(out, double(min_output_t)), double(max_output_t));
+        return output_t(out);
+    }> adcToTimbreModMap;
 
 IN_FLASH("AdcInput")
 void init()

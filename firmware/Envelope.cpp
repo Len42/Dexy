@@ -7,26 +7,20 @@ static constexpr unsigned cbitsProgress = cbitsPhase;
 static constexpr Envelope::progress_t max_progress_t =
     (Envelope::progress_t(1) << cbitsProgress) - 1;
 
-/// @brief Helper for initializing expRateMap
-/// @note This relies on math functions (e.g. std::exp()) being declared
-/// constexpr, which they are in gcc but not in other compilers or the
-/// C++20/23 standard. :(
-static constexpr Envelope::rate_t expRateMapEntry(std::size_t index, std::size_t /*unused*/)
-{
-    // This function must map index 0 -> value 1
-    // and max_param_t-1 should give an attack/release time of about 1 ms.
-    // max_param_t is a special value indicating the stage should be as short as possible.
-    double value;
-    if (index == max_param_t) {
-        value = max_progress_t + 1;
-    } else {
-        value = std::round(std::exp(index * 0.01) * 12.0243) - 11;
-    }
-    return Envelope::rate_t(value);
-}
-
 /// @brief Lookup table for exponential mapping of rate parameters
-static constexpr DataTable<Envelope::rate_t, max_param_t+1, expRateMapEntry> expRateMap;
+static constexpr DataTable<Envelope::rate_t, max_param_t+1,
+    [](std::size_t index, [[maybe_unused]] std::size_t numValues) {
+        // This function must map index 0 -> value 1
+        // and max_param_t-1 should give an attack/release time of about 1 ms.
+        // max_param_t is a special value indicating the stage should be as short as possible.
+        double value;
+        if (index == max_param_t) {
+            value = max_progress_t + 1;
+        } else {
+            value = std::round(std::exp(index * 0.01) * 12.0243) - 11;
+        }
+        return Envelope::rate_t(value);
+    }> expRateMap;
 
 /// @brief Convert an envelope rate setting (param_t) to a rate_t
 static constexpr Envelope::rate_t rateFromParam(param_t param)
@@ -73,22 +67,6 @@ using AttackStartTable = WaveTable<uint16_t, sizeLookupTable,
         return uint16_t(std::round(std::sqrt((index * 128) / 0.2499962) * 64));
     }>;
 
-/// @brief Helper for initializing expRateMap
-/// @note This relies on math functions (e.g. std::exp()) being declared
-/// constexpr, which they are in gcc but not in other compilers or the
-/// C++20/23 standard. :(
-static constexpr level_t decayTableEntry(std::size_t index, std::size_t numValues)
-{
-    // TODO: Tune these values for a good curve.
-    double value;
-    if (index == numValues-1) {
-        value = 0;
-    } else {
-        value = std::round(std::exp((numValues - 1 - index) * 0.01) * 393.996) - 394;
-    }
-    return level_t(value);
-}
-
 /// @brief Decay/release profile lookup table using interpolation with data
 /// pre-calculated at compile time
 /// @details Table size is based on the format of phase_t: 512 samples plus an
@@ -97,7 +75,16 @@ static constexpr level_t decayTableEntry(std::size_t index, std::size_t numValue
 /// @note This relies on math functions (e.g. std::exp()) being declared
 /// constexpr, which they are in gcc but not in other compilers or the
 /// C++20/23 standard. :(
-using DecayTable = WaveTable<level_t, sizeLookupTable, decayTableEntry>;
+using DecayTable = WaveTable<level_t, sizeLookupTable,
+    [](std::size_t index, [[maybe_unused]] std::size_t numValues) {
+        double value;
+        if (index == numValues-1) {
+            value = 0;
+        } else {
+            value = std::round(std::exp((numValues - 1 - index) * 0.01) * 393.996) - 394;
+        }
+        return level_t(value);
+    }>;
 
 /// @brief Lookup table for reverse mapping level -> progress, used when starting
 /// the decay and release stages.

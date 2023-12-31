@@ -78,20 +78,14 @@ output_t Operator::genNextOutput(output_t freqMod, output_t ampMod)
     return output;
 }
 
-/// @brief Helper for initializing expLevelMap
-/// @note This relies on math functions (e.g. std::exp()) being declared
-/// constexpr, which they are in gcc but not in other compilers or the
-/// C++20/23 standard. :(
-static constexpr level_t expLevelMapEntry(std::size_t index, std::size_t /*unused*/)
-{
-    // This function must map index 0 -> value 0 and
-    // index max_param_t -> value max_level_t
-    double value = std::round(std::exp(index * 0.00775) * 23.6285 - 24);
-    return level_t(value);
-}
-
 /// @brief Lookup table to map a level parameter (param_t) to an actual level (level_t).
-static constexpr DataTable<level_t, max_param_t+1, expLevelMapEntry> expLevelMap;
+static constexpr DataTable<level_t, max_param_t+1,
+    [](std::size_t index, [[maybe_unused]] std::size_t numValues) {
+        // This function must map index 0 -> value 0 and
+        // index max_param_t -> value max_level_t
+        double value = std::round(std::exp(index * 0.00775) * 23.6285 - 24);
+        return level_t(value);
+    }> expLevelMap;
 
 constexpr level_t Operator::levelFromParam(param_t param)
 {
