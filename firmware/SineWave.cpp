@@ -1,19 +1,13 @@
 namespace Dexy { namespace SineWave {
 
-/// @brief Helper for initializing SineTable
-/// @note This relies on math functions (e.g. std::sin()) being declared
-/// constexpr, which they are in gcc but not in other compilers or the
-/// C++20/23 standard. :(
-static constexpr output_t sineTableEntry(std::size_t index, std::size_t numValues)
-{
-    constexpr output_t max = max_output_t;
-    double phase = 2 * std::numbers::pi / (numValues-1) * index;
-    double sine = std::sin(phase) * max;
-    return output_t(std::round(sine));
-}
-
 /// @brief Sine wavetable
-using SineTable = WaveTable<output_t, sizeLookupTable, sineTableEntry>;
+using SineTable = WaveTable<output_t, sizeLookupTable,
+    [](std::size_t index, std::size_t numValues) {
+        constexpr output_t max = max_output_t;
+        double phase = 2 * std::numbers::pi / (numValues-1) * index;
+        double sine = std::sin(phase) * max;
+        return output_t(std::round(sine));
+    }>;
 
 void init()
 {
