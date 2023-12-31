@@ -13,8 +13,6 @@ namespace Dexy {
 /// @code
 /// VALUE_T FUNC_CALC1(std::size_t index, std::size_t numValues)
 /// @endcode
-/// Access to the data is read-only.
-///
 /// Acknowledgements
 /// ----------------
 /// Ashley Roll - https://github.com/AshleyRoll/cppcon21/blob/main/code/table_gen_1.cpp
