@@ -78,7 +78,7 @@ The Dexy firmware is open source and is published under the [MIT license](LICENS
 
 ## Software Used
 
-* [GCC for Arm](https://developer.arm.com/downloads/-/arm-gnu-toolchain-downloads) 12.2.1
+* [GCC for Arm](https://developer.arm.com/downloads/-/arm-gnu-toolchain-downloads) 13.2.1
 * [CMake](https://cmake.org/) 3.22.3
 * [Python](https://www.python.org/) 3.10.2
 * [Raspberry Pi Pico C/C++ SDK](https://github.com/raspberrypi/pico-sdk) 1.5.1
