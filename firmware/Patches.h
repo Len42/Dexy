@@ -13,6 +13,7 @@ struct EnvParams
     param_t decay = 0;                  ///< Decay rate
     param_t sustain = max_param_t;      ///< Sustain level
     param_t release = 0;                ///< Release rate
+    param_t rateScaling = 0;            ///< Rate scaling by pitch
     bool loop = false;                  ///< If true, the envelope repeats indefinitely
     constexpr bool isValid() const;     ///< Does this contain valid settings?
 };

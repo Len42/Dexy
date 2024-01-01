@@ -18,7 +18,8 @@ constexpr bool EnvParams::isValid() const
         && attack <= max_param_t
         && decay <= max_param_t
         && sustain <= max_param_t
-        && release <= max_param_t;
+        && release <= max_param_t
+        && rateScaling <= max_param_t;
 }
 
 constexpr bool OpParams::isValid() const

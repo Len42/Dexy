@@ -100,6 +100,6 @@ namespace Dexy.DexyPatch.Utils.Zpp
 
         /// <summary>Version number of serialization data format</summary>
         /// <remarks>Must be incremented when the data format is changed.</remarks>
-        private const ushort serializeVersion = 1;
+        private const ushort serializeVersion = 2;
     }
 }

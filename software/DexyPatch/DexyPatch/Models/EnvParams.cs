@@ -21,6 +21,8 @@ namespace Dexy.DexyPatch.Models
         public UInt16 sustain = DexyDefs.max_param_t;
         /// <summary>Release rate</summary>
         public UInt16 release = 0;
+        /// <summary>Rate scaling by pitch</summary>
+        public UInt16 rateScaling = 0;
         /// <summary>If true the envelope repeats indefinitely</summary>
         public bool loop = false;
 
@@ -34,7 +36,8 @@ namespace Dexy.DexyPatch.Models
                 && attack <= DexyDefs.max_param_t
                 && decay <= DexyDefs.max_param_t
                 && sustain <= DexyDefs.max_param_t
-                && release <= DexyDefs.max_param_t;
+                && release <= DexyDefs.max_param_t
+                && rateScaling <= DexyDefs.max_param_t;
         }
 
         /// <summary>
@@ -55,6 +58,7 @@ namespace Dexy.DexyPatch.Models
             w.Write(decay);
             w.Write(sustain);
             w.Write(release);
+            w.Write(rateScaling);
             w.Write(loop);
         }
 
@@ -65,6 +69,11 @@ namespace Dexy.DexyPatch.Models
             decay = r.ReadUInt16();
             sustain = r.ReadUInt16();
             release = r.ReadUInt16();
+            if (version >= 2) {
+                rateScaling = r.ReadUInt16();
+            } else {
+                rateScaling = 0;
+            }
             loop = r.ReadBoolean();
         }
 
