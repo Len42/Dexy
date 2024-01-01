@@ -24,8 +24,8 @@ public:
     /// @brief Ctor initializes dataArray using FUNC_CALC1, at compile time
     consteval DataTable()
     {
-        for (std::size_t index = 0; index < NUM_VALUES; ++index) {
-            dataArray[index] = FUNC_CALC1(index, NUM_VALUES);
+        for (auto&& [index, value] : std::views::enumerate(dataArray)) {
+            value = FUNC_CALC1(index, NUM_VALUES);
         }
     }
 

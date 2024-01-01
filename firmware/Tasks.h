@@ -116,9 +116,8 @@ public:
     consteval TaskList(PREVTASKS_T const& prevTasks, Task* newTask)
         : tasks{}
     {
-        for (int i = 0; i < NUMTASKS - 1; ++i) {
-            tasks[i] = prevTasks[i];
-        }
+        if constexpr (NUMTASKS > 1)
+            std::copy(std::begin(prevTasks), std::end(prevTasks), std::begin(tasks));
         tasks[NUMTASKS-1] = newTask;
     }
 

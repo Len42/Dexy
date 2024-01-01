@@ -90,8 +90,7 @@ public:
     void dump() const {
         printf("%d outputs", numOutputs);
         bool fWasOutput = false;
-        for (unsigned i = 0; i < numOperators; ++i) {
-            const AlgoOp& op = ops[i];
+        for (auto&& [i, op] : std::views::enumerate(ops)) {
             switch (op.mod) {
             case UseMod::none:
                 if (!fWasOutput)

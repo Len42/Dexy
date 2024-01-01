@@ -12,6 +12,7 @@
 #include <numeric>
 #include <string> // only for ShowDecl.h
 #include <string_view>
+#include <ranges>
 #include <utility>
 #include <variant>
 #include <stdio.h>
