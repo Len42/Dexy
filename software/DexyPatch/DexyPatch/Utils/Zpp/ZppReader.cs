@@ -14,21 +14,24 @@ namespace Dexy.DexyPatch.Utils.Zpp
         /// Read an object that supports <see cref="Dexy.DexyPatch.Utils.Zpp.IZppSerialize"/>
         /// </summary>
         /// <param name="obj"></param>
-        public void Read(IZppSerialize obj) { obj.Deserialize(this); }
+        /// <param name="version">Data format version</param>
+        public void Read(IZppSerialize obj, ushort version)
+            => obj.Deserialize(this, version);
 
         /// <summary>
         /// Read a fixed length array of objects
         /// </summary>
         /// <param name="arr"></param>
         /// <param name="size"></param>
+        /// <param name="version">Data format version</param>
         /// <exception cref="Dexy.DexyPatch.Utils.Zpp.ZppException"></exception>
-        public void ReadArray(IZppSerialize[] arr, uint size)
+        public void ReadArray(IZppSerialize[] arr, uint size, ushort version)
         {
             if (arr.Length != size) {
                 throw new ZppException("Argument size mismatch");
             }
             for (int i = 0; i < arr.Length; i++) {
-                arr[i].Deserialize(this);
+                arr[i].Deserialize(this, version);
             }
         }
 

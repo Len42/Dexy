@@ -7,9 +7,21 @@ namespace Dexy.DexyPatch.Utils.Zpp
     /// Serialize objects in the format used by the zpp::bits C++ library.
     /// </summary>
     /// <remarks>
-    /// I don't know whether or not System.Runtime.Serialization can be used to
-    /// do this; figuring that out was much harder than just writing a simple
-    /// implementation.
+    /// System.Runtime.Serialization is not used because I couldn't figure out
+    /// how to make it handle the data format defined by zpp::bits, which is
+    /// used by the module firmware.
+    /// 
+    /// Versioning
+    /// ----------
+    /// <see cref="Dexy.DexyPatch.Utils.Zpp.ZppSerialize.serializeVersion"/>
+    /// defines the version of the data format for serialization. It must be
+    /// incremented whenever the data format is changed.
+    /// 
+    /// <see cref="Dexy.DexyPatch.Utils.Zpp.ZppSerialize.Serialize"/> writes
+    /// data in the latest format (specified by serialVersion).
+    /// 
+    /// <see cref="Dexy.DexyPatch.Utils.Zpp.ZppSerialize.Deserialize"/> can read
+    /// data in any format back to version 1.
     /// </remarks>
     public static class ZppSerialize
     {
@@ -61,16 +73,14 @@ namespace Dexy.DexyPatch.Utils.Zpp
         {
             using var r = new ZppReader(str, Encoding.Latin1);
             uint cookie = r.ReadUInt32();
-            if (cookie != serializeCookie)
-            {
+            if (cookie != serializeCookie) {
                 throw new ZppException("Bad cookie");
             }
             ushort version = r.ReadUInt16();
-            if (version != serializeVersion)
-            {
+            if (version < 1 || version > serializeVersion) {
                 throw new ZppException("Version mismatch");
             }
-            obj.Deserialize(r);
+            obj.Deserialize(r, version);
         }
 
         /// <summary>
@@ -89,6 +99,7 @@ namespace Dexy.DexyPatch.Utils.Zpp
         private const uint serializeCookie = 'D' | ('e' | ('x' | 'y' << 8) << 8) << 8;
 
         /// <summary>Version number of serialization data format</summary>
-        private const ushort serializeVersion = 1;
+        /// <remarks>Must be incremented when the data format is changed.</remarks>
+        private const ushort serializeVersion = 2;
     }
 }

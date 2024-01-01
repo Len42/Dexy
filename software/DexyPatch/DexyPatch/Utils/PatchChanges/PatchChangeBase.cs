@@ -65,7 +65,8 @@ namespace Dexy.DexyPatch.Utils.PatchChanges
         public abstract void Serialize(ZppWriter w);
 
         // Not required
-        public virtual void Deserialize(ZppReader r) { throw new NotSupportedException(); }
+        public virtual void Deserialize(ZppReader r, ushort version)
+            => throw new NotSupportedException();
 
         #endregion
     }

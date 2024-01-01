@@ -57,9 +57,9 @@ namespace Dexy.DexyPatch.Models
         public void Serialize(ZppWriter w)
             => w.WriteArray(patches, DexyDefs.numPatches);
 
-        public void Deserialize(ZppReader r)
+        public void Deserialize(ZppReader r, ushort version)
         {
-            r.ReadArray(patches, DexyDefs.numPatches);
+            r.ReadArray(patches, DexyDefs.numPatches, version);
             if (!IsValid()) {
                 throw new InvalidPatchException();
             }

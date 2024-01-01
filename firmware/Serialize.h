@@ -22,7 +22,7 @@ namespace Serialize {
 // There are no variable-size data members in our serializable types.
 // Note that these sizes are different from sizeof(x) because serialization packs differently.
 constexpr size_t serializeHdrSize = 6;
-constexpr size_t envParamsSize = 11;
+constexpr size_t envParamsSize = 13;
 constexpr size_t opParamsSize = 8 + envParamsSize;
 constexpr size_t patchSize = 16 + 3 + 6 * opParamsSize;
 constexpr size_t patchBankSize = 32 * patchSize;
@@ -42,7 +42,7 @@ constexpr cookie_t serializeCookie = 'D'|('e'|('x'|('y'<<8))<<8)<<8; // little-e
 using version_t = uint16_t;
 
 /// @brief Version number for the serialized data format
-constexpr version_t serializeVersion = 1;
+constexpr version_t serializeVersion = 2;
 
 /// @brief Read an object from a serialized data blob
 /// @param storage 

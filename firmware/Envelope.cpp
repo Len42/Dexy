@@ -106,13 +106,13 @@ void Envelope::init()
 void Envelope::setParams(const Patches::EnvParams& params)
 {
     // Convert input parameters from param_t to appropriate implementation values.
-    // TODO: Keyboard (pitch) rate scaling - single number per op; see Complete DX7
     // params.delay represents a time but delay is a rate, so change it around
     delay = rateFromParam(max_param_t - params.delay);
     attack = attackRateFromParam(params.attack);
     decay = decayRateFromParam(params.decay);
     sustain = Operator::levelFromParam(params.sustain);
     release = decayRateFromParam(params.release);
+    // TODO: Keyboard (pitch) rate scaling based on params.rateScaling
     loop = params.loop;
 }
 
