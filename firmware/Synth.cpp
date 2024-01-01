@@ -38,11 +38,11 @@ void init()
         [](const Algorithm& algo){return algo.isValid();}));
 
 #ifdef DEBUG_DUMP_ALGORITHMS
-    for (int i = 0; i < numAlgorithms; ++i) {
+    for (auto&& [i, algo] : std::views::enumerate(algorithms)) {
         printf("algorithm %d: ", i+1);
-        if (!algorithms[i].isValid())
+        if (!algo.isValid())
             printf("ERROR ");
-        algorithms[i].dump();
+        algo.dump();
     }
 #endif
 
@@ -93,10 +93,10 @@ static void loadPatchImpl(unsigned index)
         const Patches::Patch& patch = Patches::getPatch(index);
         algorithm = algorithms[patch.algorithm];
         feedbackAmount = patch.feedbackAmount;
-        for (unsigned i = 0; i < numOperators; ++i) {
-            operators[i].setOpParams(patch.opParams[i]);
-            operators[i].resetWave();
-            // don't reset the envelope becuase that messes up live updating
+        for (auto&& [op, params] : std::views::zip(operators, patch.opParams)) {
+            op.setOpParams(params);
+            op.resetWave();
+            // don't reset the envelope because that messes up live updating
         }
         patchName = patch.name;
     }
@@ -161,9 +161,7 @@ inline output_t genNextOutput()
     output_t freqModSaved = 0;
     static int32_t feedback0 = 0;
     static int32_t feedback1 = 0;
-    for (unsigned i = 0; i < numOperators; ++i) {
-        Operator& op = operators[i];
-        const AlgoOp& algoOp = algorithm.ops[i];
+    for (auto&& [op, algoOp] : std::views::zip(operators, algorithm.ops)) {
         // Set the appropriate modulation for this operator
         output_t freqMod;
         switch (algoOp.mod) {

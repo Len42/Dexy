@@ -144,8 +144,7 @@ consteval std::array<char, SIZE-1>
 strToArray(const char(&str)[SIZE])
 {
     std::array<char, SIZE-1> arr;
-    for (unsigned i = 0; i < SIZE-1; ++i)
-        arr[i] = str[i];
+    std::copy(std::begin(str), std::prev(std::end(str)), std::begin(arr));
     return arr;
 }
 

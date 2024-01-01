@@ -89,13 +89,6 @@ static Command readCommand()
         char buf[commandSize];
         std::string_view bufSv(buf, commandSize);
         buf[0] = char(ch);
-// TODO: TEST THIS
-        // for (unsigned index = 1;
-        //     index < commandSize && (ch = serialGetCharWait()) >= 0;
-        //     ++index)
-        // {
-        //     buf[index] = char(ch);
-        // }
         for (auto& chBuf : std::ranges::drop_view(buf, 1)) {
             ch = serialGetCharWait();
             if (ch < 0) {
@@ -104,12 +97,9 @@ static Command readCommand()
             }
             chBuf = char(ch);
         }
-        // if (ch < 0) {
-        //     dputs("SerialIO: ERROR: timeout/error");
-        //     return Command::Invalid;
-        // }
-#define PARSE_COMMAND(name, ...) if (bufSv == command##name) return Command::name; else
-        FOR_EACH_COMMAND(PARSE_COMMAND)
+        // Find which command was read.
+#define MATCH_COMMAND(name, ...) if (bufSv == command##name) return Command::name; else
+        FOR_EACH_COMMAND(MATCH_COMMAND)
         {
             dputs("SerialIO: ERROR: invalid command");
             return Command::Invalid;
