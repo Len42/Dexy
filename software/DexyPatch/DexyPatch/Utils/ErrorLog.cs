@@ -34,7 +34,7 @@ namespace Dexy.DexyPatch.Utils
         public static void TraceError(Exception ex)
         {
             try {
-                StringWriter writer = new StringWriter();
+                var writer = new StringWriter();
                 WriteError(writer, ex);
                 Trace.TraceError(writer.ToString());
             }
@@ -44,7 +44,7 @@ namespace Dexy.DexyPatch.Utils
         /// <summary>
         /// Write an error message to the debug trace log
         /// </summary>
-        /// <param name="ex"></param>
+        /// <param name="st"></param>
         public static void TraceError(string st)
         {
             Trace.TraceError(st);

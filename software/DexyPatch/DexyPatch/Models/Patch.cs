@@ -75,9 +75,9 @@ namespace Dexy.DexyPatch.Models
             w.WriteFixedLength(name, patchNameLen);
         }
 
-        public void Deserialize(ZppReader r)
+        public void Deserialize(ZppReader r, ushort version)
         {
-            r.ReadArray(opParams, DexyDefs.numOperators);
+            r.ReadArray(opParams, DexyDefs.numOperators, version);
             algorithm = r.ReadByte();
             feedbackAmount = r.ReadUInt16();
             name = r.ReadFixedLength(patchNameLen);

@@ -58,7 +58,7 @@ namespace Dexy.DexyPatch.Models
             w.Write(loop);
         }
 
-        public void Deserialize(ZppReader r)
+        public void Deserialize(ZppReader r, ushort version)
         {
             delay = r.ReadUInt16();
             attack = r.ReadUInt16();

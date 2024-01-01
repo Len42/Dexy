@@ -15,6 +15,12 @@
         /// Read this object's data
         /// </summary>
         /// <param name="r"></param>
-        void Deserialize(ZppReader r);
+        /// <param name="version">Data format version number</param>
+        /// <remarks>
+        /// Any implementation must be able to handle any data format back to
+        /// <paramref name="version"/> == 1, filling in default values for any
+        /// fields not included in the old data format.
+        /// </remarks>
+        void Deserialize(ZppReader r, ushort version);
     }
 }

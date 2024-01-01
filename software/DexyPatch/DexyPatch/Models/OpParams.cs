@@ -58,13 +58,13 @@ namespace Dexy.DexyPatch.Models
             w.Write(ampModSens);
         }
 
-        public void Deserialize(ZppReader r)
+        public void Deserialize(ZppReader r, ushort version)
         {
             fixedFreq = r.ReadBoolean();
             noteOrFreq = r.ReadUInt16();
             outputLevel = r.ReadUInt16();
             useEnvelope = r.ReadBoolean();
-            r.Read(env);
+            r.Read(env, version);
             ampModSens = r.ReadUInt16();
         }
 
