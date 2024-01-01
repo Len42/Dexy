@@ -161,17 +161,15 @@ void showList(int itemSelected, auto getItem)
     bool fSelection = (itemSelected >= 0);
     int itemTop = (fSelection ? itemSelected : lineSelected) - lineSelected;
     unsigned xLeft = fSelection ? charWidth() : 0;
-    unsigned y = 0;
-    for (int i = itemTop; ; ++i) {
-        if (y >= screenHeight())
-            break;
+    int i;
+    unsigned y;
+    for (i = itemTop, y = 0U; y < screenHeight(); ++i, y += charHeight()) {
         if (i >= 0) {
             auto str = getItem(i);
             if (str.empty())
                 break;
             drawText(str, xLeft, y, false);
         }
-        y += charHeight();
     }
     if (fSelection) {
         drawText('>', 0, lineSelected * charHeight());
