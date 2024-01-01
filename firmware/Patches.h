@@ -5,6 +5,22 @@ namespace Dexy {
 /// @brief Patch definition and storage
 namespace Patches {
 
+/// @brief Envelope level scaling curve type
+enum class ScalingCurve : signed char {
+    NExp = -2, NLin = -1, None = 0, Lin = 1, Exp = 2
+};
+
+/// @brief Envelope level scaling parameters
+struct LevelScalingParams
+{
+    midiNote_t breakPoint = 60 * midiNoteSemitone;  ///< Left-right break point
+    ScalingCurve curveLeft = ScalingCurve::None;    ///< Scaling curve to the left
+    ScalingCurve curveRight = ScalingCurve::None;   ///< Scaling curve to the right
+    param_t depthLeft = 0;                          ///< Scaling depth to the left
+    param_t depthRight = 0;                         ///< Scaling depth to the right
+    constexpr bool isValid() const;                 ///< Does this contain valid settings?
+};
+
 /// @brief Envelope parameters
 struct EnvParams
 {
@@ -14,6 +30,7 @@ struct EnvParams
     param_t sustain = max_param_t;      ///< Sustain level
     param_t release = 0;                ///< Release rate
     param_t rateScaling = 0;            ///< Rate scaling by pitch
+    LevelScalingParams levelScaling;    ///< Level scaling parameters
     bool loop = false;                  ///< If true, the envelope repeats indefinitely
     constexpr bool isValid() const;     ///< Does this contain valid settings?
 };

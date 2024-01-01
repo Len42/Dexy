@@ -25,6 +25,8 @@ consteval Patch makeDefaultPatch()
                         .decay = 500,
                         .sustain = 700,
                         .release = 400,
+                        .rateScaling = 0,
+                        .levelScaling{},
                         .loop = false
                     },
                     .ampModSens = max_param_t //0
@@ -42,6 +44,8 @@ consteval Patch makeDefaultPatch()
                     .decay = 400,
                     .sustain = 930,
                     .release = 400,
+                    .rateScaling = 0,
+                    .levelScaling{},
                     .loop = false
                 },
                 .ampModSens = 0 // max_param_t
@@ -69,6 +73,8 @@ consteval Patch makeBellPatch()
                     .decay = 300,
                     .sustain = 0,
                     .release = 300,
+                    .rateScaling = 0,
+                    .levelScaling{},
                     .loop = false
                 },
                 .ampModSens = 0
@@ -85,6 +91,8 @@ consteval Patch makeBellPatch()
                     .decay = 120,
                     .sustain = 0,
                     .release = 200,
+                    .rateScaling = 0,
+                    .levelScaling{},
                     .loop = false
                 },
                 .ampModSens = 0
@@ -101,6 +109,8 @@ consteval Patch makeBellPatch()
                     .decay = 300,
                     .sustain = 0,
                     .release = 300,
+                    .rateScaling = 0,
+                    .levelScaling{},
                     .loop = false
                 },
                 .ampModSens = 0
@@ -117,6 +127,8 @@ consteval Patch makeBellPatch()
                     .decay = 120,
                     .sustain = 0,
                     .release = 200,
+                    .rateScaling = 0,
+                    .levelScaling{},
                     .loop = false
                 },
                 .ampModSens = 0
@@ -133,6 +145,8 @@ consteval Patch makeBellPatch()
                     .decay = 500,
                     .sustain = 0,
                     .release = 600,
+                    .rateScaling = 0,
+                    .levelScaling{},
                     .loop = false
                 },
                 .ampModSens = 0
@@ -149,6 +163,8 @@ consteval Patch makeBellPatch()
                     .decay = 800,//910,
                     .sustain = 0,
                     .release = 910,
+                    .rateScaling = 0,
+                    .levelScaling{},
                     .loop = false
                 },
                 .ampModSens = 0
@@ -176,6 +192,8 @@ consteval Patch makeTestPatch()
                         .decay = 400,
                         .sustain = 930,
                         .release = 400,
+                        .rateScaling = 0,
+                        .levelScaling{},
                         .loop = false
                     },
                     .ampModSens = 0
@@ -193,6 +211,8 @@ consteval Patch makeTestPatch()
                     .decay = 0,
                     .sustain = max_param_t,
                     .release = 400,
+                    .rateScaling = 0,
+                    .levelScaling{},
                     .loop = false
                 },
                 .ampModSens = 0
