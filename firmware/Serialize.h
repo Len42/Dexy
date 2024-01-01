@@ -22,7 +22,7 @@ namespace Serialize {
 // There are no variable-size data members in our serializable types.
 // Note that these sizes are different from sizeof(x) because serialization packs differently.
 constexpr size_t serializeHdrSize = 6;
-constexpr size_t envParamsSize = 13;
+constexpr size_t envParamsSize = 13 + 8;
 constexpr size_t opParamsSize = 8 + envParamsSize;
 constexpr size_t patchSize = 16 + 3 + 6 * opParamsSize;
 constexpr size_t patchBankSize = 32 * patchSize;

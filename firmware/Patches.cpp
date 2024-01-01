@@ -12,6 +12,14 @@ static constexpr bool isGoodChar(char ch)
     return ch >= charMin;
 }
 
+constexpr bool LevelScalingParams::isValid() const
+{
+    return curveLeft >= ScalingCurve::NExp && curveLeft <= ScalingCurve::Exp
+        && curveRight >= ScalingCurve::NExp && curveRight <= ScalingCurve::Exp
+        && depthLeft <= max_param_t
+        && depthRight <= max_param_t;
+}
+
 constexpr bool EnvParams::isValid() const
 {
     return delay <= max_param_t
@@ -19,7 +27,8 @@ constexpr bool EnvParams::isValid() const
         && decay <= max_param_t
         && sustain <= max_param_t
         && release <= max_param_t
-        && rateScaling <= max_param_t;
+        && rateScaling <= max_param_t
+        && levelScaling.isValid();
 }
 
 constexpr bool OpParams::isValid() const
