@@ -16,8 +16,7 @@ public:
 };
 
 /// @brief Define the list of tasks to execute
-///
-/// Any tasks not currently required (e.g. for debugging) can be commented out.
+/// @details Any tasks not currently required (e.g. for debugging) can be commented out.
 /// @see Tasks::TaskList
 IN_FLASH("taskList")
 static constexpr auto taskList = Tasks::makeTaskList<

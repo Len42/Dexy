@@ -10,8 +10,7 @@ namespace Core1 {
 void main();
 
 /// @brief Timer interrupt handler for this core
-///
-/// Outputs the last audio sample calculated by synthLoop()
+/// @details Outputs the last audio sample calculated by synthLoop()
 void onTimerInterrupt();
 
 /// @brief GPIO interrupt handler for the gate input

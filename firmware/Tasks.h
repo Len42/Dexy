@@ -3,7 +3,7 @@
 namespace Dexy {
     
 /// @brief A simple, efficient task scheduler for embedded microcontrollers
-/// @details
+///
 /// This task scheduler is designed to be simple to use and to have very little
 /// overhead in time and memory. Some compile-time tricks are used to create a
 /// static list of tasks, while keeping the application-level code simple with

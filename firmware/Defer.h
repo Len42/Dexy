@@ -3,12 +3,12 @@
 namespace Dexy {
     
 /// @brief Asynchronous function execution, oversimplified
-/// @details
+///
 /// This is a simple way to implement asynchronous function calls that are
-/// executed by a different core or Dexy::Tasks::Task. It only supports simple
-/// functions with no return value. A mutex may be used to ensure synchronization
-/// between cores. (The mutex is optional because it's only needed when calling
-/// between cores, not between tasks.)
+/// executed by a different core or by Dexy::Tasks::Task. It only supports
+/// simple functions with no return value. A mutex may be used to ensure
+/// synchronization between cores. (The mutex is optional because it's only
+/// needed when calling between cores, not between tasks.)
 ///
 /// Usage
 /// -----

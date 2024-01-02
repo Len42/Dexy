@@ -42,8 +42,8 @@ public:
     Lockout& operator=(Lockout&&) noexcept = default;
 
 private:
-    bool locked;
-    uint32_t savedInterrupts;
+    bool locked;                ///< Are interrupts and core 1 currently disabled?
+    uint32_t savedInterrupts;   ///< Interrupt flags to be restored by ~Lockout()
 };
 
 }
