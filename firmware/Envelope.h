@@ -13,9 +13,9 @@ namespace Dexy {
 /// behaviour.)
 ///
 /// DX7 envelopes do not have an explicit Delay stage, but they do have a hidden
-/// feature that two successive levels that are almost equal act as a delay. The
-/// main use for that feature is for delayed attack, so that is what is implemented
-/// here.
+/// feature that two successive levels that are almost equal act as a delay.
+/// The main use for that feature is for delayed attack so this class implements
+/// a Delay stage instead.
 ///
 /// Rate and delay time settings are exponential. For example, a Delay setting
 /// of 50% will result in a delay time that is much less than 50% of maximum.
@@ -25,23 +25,25 @@ namespace Dexy {
 ///
 /// Notes
 /// -----
+/// https://mrgsynth.tlbflush.org/notes/post/dx7eg2/ shows (I think):
+/// - level is exponential
+/// - release from less-than-max level does the "tail end" of the exponential
+///   curve, not the start of the curve
+///
+/// There is no global pitch envelope like the DX7 has. An external envelope can be
+/// patched into the pitch mod input.
+///
+/// @todo
 /// Max level (after attack) has been considered but not implemented.
 /// It's redundant with operator output level, and is a bit of a pain to implement,
 /// but maybe it should be supported for ease of porting DX7 patches.
 /// - Max & sustain levels _should_ be scaled by output level (see Complete DX7)
 /// - do rates change too??
 ///
-/// There is no global pitch envelope like the DX7 has. An external envelope can be
-/// patched into the pitch mod input.
-///
-/// https://mrgsynth.tlbflush.org/notes/post/dx7eg2/ shows (I think):
-/// - level is exponential
-/// - release from less-than-max level does the "tail end" of the exponential
-///   curve, not the start of the curve
-///
 /// @todo Tune parameters to match the ones given in the article (or a better source)
 /// (sort of done but still not sure they're good overall)
-/// @todo EG rate scaling?
+///
+/// @todo EG rate & level scaling
 class Envelope
 {
 public:

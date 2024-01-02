@@ -30,8 +30,7 @@ void main()
 }
 
 /// @brief Main synthesizer loop
-///
-/// Generates audio samples which will be output by onTimerInterrupt()
+/// @details Generates audio samples which will be output by onTimerInterrupt()
 [[noreturn]] __attribute__((noinline))
 static void synthLoop()
 {

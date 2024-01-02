@@ -13,18 +13,20 @@ namespace Dexy {
 /// @code
 /// #include "CritSec.h"
 ///
+/// struct CritSecForFunc { };
+///
 /// void init()
 /// {
 ///     // Initialize a critical_section_t that is associated with any
-///     // CritSec instance created with the same <AnyType> parameter
-///     CritSec<AnyType>::init();
+///     // CritSec instance created with the same <CritSecForFunc> parameter
+///     CritSec<CritSecForFunc>::init();
 /// }
 ///
 /// void func()
 /// {
 ///     // ...
 ///     {
-///         CritSec<AnyType> cs;
+///         CritSec<CritSecForFunc> cs;
 ///         // Code in this block is protected by a critical_section_t
 ///     }
 ///     // ...
@@ -59,8 +61,8 @@ template<typename T>
 class CritSec
 {
 public:
-    /// @brief Initialize a critical_section_t that is associated with any
-    /// CritSec instance declared with the same T parameter
+    /// @brief Initialize a critical_section_t that is associated with all
+    /// CritSec instances declared with the same T parameter
     static void init() { critical_section_init(&cs); }
 
     /// @brief De-initialize the critical_section_t

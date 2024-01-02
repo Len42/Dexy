@@ -44,8 +44,8 @@ static constexpr int linearizeAdcInput(int adcValue)
     return adcValue + adcAdjust;
 }
 
-/// @brief Lookup table to map an ADC input value to a note pitch, expressed as
-/// a wavetable increment value (phase_t).
+/// @brief Lookup table to map an ADC input value to a note pitch
+/// @details The pitch is expressed as a wavetable increment value (phase_t).
 static constexpr DataTable<phase_t, maxAdcValue+1,
     [](std::size_t index, [[maybe_unused]] std::size_t numValues) {
         // Table is indexed by the ADC input value, representing pitch CV

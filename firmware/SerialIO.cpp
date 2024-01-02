@@ -25,8 +25,7 @@ enum class Command {
 /// @brief Commands are received as 4-char strings
 static constexpr unsigned commandSize = 4;
 
-// Command strings
-// e.g.: static constexpr std::string_view commandVersion = "vers"sv;
+/// @brief Command strings
 #define DEFINE_COMMAND_NAME(name, cmd, ...) static constexpr std::string_view command##name = #cmd##sv;
 FOR_EACH_COMMAND(DEFINE_COMMAND_NAME)
 
@@ -35,10 +34,6 @@ FOR_EACH_COMMAND(DEFINE_COMMAND_NAME)
 /// @details This is specialized for each Command. The non-specialized version
 /// is not defined.
 template<Command command> static void doCommand();
-
-// Forward-declare all the specializations of doCommand()
-#define DECLARE_COMMAND_HANDLER(name, ...) template<> void doCommand<Command::name>();
-FOR_EACH_COMMAND(DECLARE_COMMAND_HANDLER)
 
 /// @brief Input/output data is stored in a buffer
 static inline Patches::SerializedPatchBank dataBuf;
@@ -53,6 +48,9 @@ void serialDrainInput();
 static int serialWriteData(const auto& buf);
 static void serialWriteLine(const char* str);
 static void serialWriteAck();
+// Forward-declare all the specializations of doCommand()
+#define DECLARE_COMMAND_HANDLER(name, ...) template<> void doCommand<Command::name>();
+FOR_EACH_COMMAND(DECLARE_COMMAND_HANDLER)
 
 IN_FLASH("SerialIO")
 void SerialIOTask::init()

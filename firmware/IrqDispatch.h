@@ -6,12 +6,12 @@ namespace Dexy {
 namespace IrqDispatch {
 
 /// @brief Set up a handler/dispatcher for GPIO interrupts handled by core 0.
-/// Specific pin interrupts are enabled in the appropriate places.
+/// @details Specific pin interrupts are enabled in the appropriate places.
 /// Must be called by core 0 at startup.
 void initCore0();
 
 /// @brief Set up a handler/dispatcher for GPIO and PWM interrupts handled by core 1.
-/// Specific pin interrupts are enabled in the appropriate places.
+/// @details Specific pin interrupts are enabled in the appropriate places.
 /// Must be called by core 1 at startup.
 void initCore1();
 
