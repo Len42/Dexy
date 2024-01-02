@@ -11,19 +11,19 @@ import sys
 import os
 
 cmdName, *inputFiles = sys.argv
-# Set outputDir to the same directory as this script - that is where output files
-# will be written.
-# If that's not desired, set outputDir = '' to write output files next to the input files.
-outputDir = os.path.dirname(cmdName)
-#outputDir = ''
-cmdName = os.path.basename(cmdName)
-for inputFile in inputFiles:
-    outputFile = inputFile + '.h'
-    if outputDir:
-        outputFile = os.path.join(outputDir, os.path.basename(outputFile))
-    try:
-        with open(inputFile, 'rb') as input:
-            try:
+try:
+    # Set outputDir to the same directory as this script - that is where output files
+    # will be written.
+    # If that's not desired, set outputDir = '' to write output files next to the input files.
+    outputDir = os.path.dirname(cmdName)
+    #outputDir = ''
+    cmdName = os.path.basename(cmdName)
+    for inputFile in inputFiles:
+        outputFile = inputFile + '.h'
+        if outputDir:
+            outputFile = os.path.join(outputDir, os.path.basename(outputFile))
+        try:
+            with open(inputFile, 'rb') as input:
                 with open(outputFile, 'w') as output:
                     i = 0
                     while char := input.read(1):
@@ -34,7 +34,7 @@ for inputFile in inputFiles:
                             endLine = ''
                         print(f'{ord(char):3}, ', end=endLine, file=output)
                     print(file=output)
-            except Exception as ex:
-                print(f'{cmdName}: {ex}')
-    except Exception as ex:
-        print(f'{cmdName}: {ex}')
+        except Exception as ex:
+            print(f'{cmdName}: {ex}')
+except Exception as ex:
+    print(f'{cmdName}: {ex}')
