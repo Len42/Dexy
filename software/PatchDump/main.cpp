@@ -57,10 +57,21 @@ static version_t ReadHeader(std::istream& input)
     }
     version_t version;
     ReadNum(input, &version);
-    if (!input || version > versionMax) {
+    if (!input || version == 0 || version > versionMax) {
         throwError("Bad patch file version");
     }
     return version;
+}
+
+static bool CheckEof(std::istream& input)
+{
+    if (input.eof()) {
+        return false;
+    } else {
+        char ch;
+        input >> ch;
+        return input.eof();
+    }
 }
 
 int main(int argc, char* argv[])
@@ -93,10 +104,16 @@ int main(int argc, char* argv[])
         std::istream& input = inputFromStdin ? std::cin : inFile;
         // Throw an exception on stream error
         input.exceptions(std::istream::badbit);
+        std::cout << std::format("Patch file: {}\n", inputFileName);
 
         version_t version = ReadHeader(input);
         
         // TODO: read appropriate type of patch
+
+        // Check for EOF
+        if (!CheckEof(input)) {
+            throwFileError("Bad patch file - excess data");
+        }
 
         // TODO: dump patch data
 
