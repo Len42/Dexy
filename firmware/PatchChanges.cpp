@@ -92,7 +92,7 @@ static void checkReloadPatch(unsigned iPatch)
 IN_FLASH("Patches")
 void mergePatchChange(const PatchChange& change)
 {
-    if (change.iPatch < numPatches) {
+    if (change.iPatch < Patches::numPatches) {
         debugMergeInfo("Patch %u replaced", change.iPatch);
         patchBankCurrent.patches[change.iPatch] = change.patch;
         checkReloadPatch(change.iPatch);
@@ -104,7 +104,7 @@ void mergePatchChange(const PatchChange& change)
 IN_FLASH("Patches")
 void mergePatchChange(const PatchNameChange& change)
 {
-    if (change.iPatch < numPatches) {
+    if (change.iPatch < Patches::numPatches) {
         debugMergeInfo("Patch %u name -> %s", change.iPatch,
             std::string(std::begin(change.name), std::end(change.name)).c_str());
         patchBankCurrent.patches[change.iPatch].name = change.name;
@@ -117,7 +117,7 @@ void mergePatchChange(const PatchNameChange& change)
 IN_FLASH("Patches")
 void mergePatchChange(const PatchSettingChange& change)
 {
-    if (change.iPatch < numPatches && change.field < std::size(patchFields)) {
+    if (change.iPatch < Patches::numPatches && change.field < std::size(patchFields)) {
         debugMergeInfo("Patch %u %s -> %u",
             change.iPatch, patchFieldNames[change.field], change.value);
         Patch& patch = patchBankCurrent.patches[change.iPatch];
@@ -140,7 +140,7 @@ void mergePatchChange(const PatchSettingChange& change)
 IN_FLASH("Patches")
 void mergePatchChange(const PatchOpChange& change)
 {
-    if (change.iPatch < numPatches && change.iOp < numOperators
+    if (change.iPatch < Patches::numPatches && change.iOp < numOperators
         && change.field < std::size(opParamsFields))
     {
         debugMergeInfo("Patch %u op %u %s -> %u",

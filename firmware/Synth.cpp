@@ -88,7 +88,7 @@ static void loadPatchDeferred(Defer::UseCritSec /*unused*/, unsigned index)
 /// @param index Patch number
 static void loadPatchImpl(unsigned index)
 {
-    if (index < numPatches) {
+    if (index < Patches::numPatches) {
         patchIndex = index;
         const Patches::Patch& patch = Patches::getPatch(index);
         algorithm = algorithms[patch.algorithm];

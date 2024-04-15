@@ -59,9 +59,6 @@ constexpr unsigned numPatches = 32;
 /// @brief Number of operators in a Dexy::Patches::Patch
 constexpr unsigned numOperators = 6;
 
-/// @brief Number of synthesis algorithms
-constexpr unsigned numAlgorithms = 32;
-
 /// @brief Frequency ratio defines a frequency as a multiple of the current
 /// note's base frequency
 /// @details Fixed-point value, 5-bit integer + 11-bit fraction
