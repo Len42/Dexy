@@ -214,7 +214,7 @@ void doState<State::Select>()
             setState<State::Idle>();
         } else if (selectionChange) {
             iSelection += selectionChange;
-            iSelection = std::clamp(iSelection, 0, int(numPatches)-1);
+            iSelection = std::clamp(iSelection, 0, int(Patches::numPatches)-1);
             showSelectedPatch();
             setTimeout(timeoutSelect);
         }
@@ -316,7 +316,7 @@ IN_FLASH("UI")
 static void showPatchList(int iSelected)
 {
     Display::showList(iSelected, [](int i) {
-        return (i < int(numPatches))
+        return (i < int(Patches::numPatches))
             ? std::string_view(Patches::getPatch(i).name.data(), Patches::patchNameLen)
             : std::string_view();
     });

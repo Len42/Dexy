@@ -12,33 +12,33 @@ static constexpr bool isGoodChar(char ch)
     return ch >= charMin;
 }
 
-constexpr bool EnvParams::isValid() const
+constexpr bool isValid(const EnvParams& obj)
 {
-    return delay <= max_param_t
-        && attack <= max_param_t
-        && decay <= max_param_t
-        && sustain <= max_param_t
-        && release <= max_param_t;
+    return obj.delay <= max_param_t
+        && obj.attack <= max_param_t
+        && obj.decay <= max_param_t
+        && obj.sustain <= max_param_t
+        && obj.release <= max_param_t;
 }
 
-constexpr bool OpParams::isValid() const
+constexpr bool isValid(const OpParams& obj)
 {
-    return outputLevel <= max_param_t
-        && ampModSens <= max_param_t
-        && env.isValid();
+    return obj.outputLevel <= max_param_t
+        && obj.ampModSens <= max_param_t
+        && isValid(obj.env);
 }
 
-constexpr bool Patch::isValid() const
+constexpr bool isValid(const Patch& obj)
 {
-    return algorithm < numAlgorithms
-        && feedbackAmount <= max_param_t
-        && std::ranges::all_of(name, [](auto&& ch){return isGoodChar(ch);})
-        && std::ranges::all_of(opParams, [](auto&& op) { return op.isValid(); });
+    return obj.algorithm < numAlgorithms
+        && obj.feedbackAmount <= max_param_t
+        && std::ranges::all_of(obj.name, [](auto&& ch){return isGoodChar(ch);})
+        && std::ranges::all_of(obj.opParams, [](auto&& op) { return isValid(op); });
 }
 
-constexpr bool PatchBank::isValid() const
+constexpr bool isValid(const PatchBank& obj)
 {
-    return std::ranges::all_of(patches, [](auto&& patch){return patch.isValid();});
+    return std::ranges::all_of(obj.patches, [](auto&& patch){return isValid(patch);});
 }
 
 /// @brief Short consteval helper to serialize a PatchBank for initialization
@@ -47,7 +47,7 @@ constexpr bool PatchBank::isValid() const
 template<PatchBank patchBank>
 static consteval SerializedPatchBank patchBankToBytes()
 {
-    return Serialize::objToBytes<PatchBank, patchBank, Serialize::patchBankDataSize>();
+    return Serialize::objToBytes<PatchBank, patchBank, patchBankDataSize>();
 }
 
 /// @brief The initial patch data that is loaded into the PatchBank at startup
@@ -65,17 +65,17 @@ static PatchBank patchBankCurrent;
 /// @brief Compile-time consistency checks
 static consteval void verifyData()
 {
-    static_assert(makeDefaultPatchBank().isValid());
-    static_assert(Serialize::patchBankDataSize == patchBankToBytes<makeDefaultPatchBank()>().size());
+    static_assert(isValid(makeDefaultPatchBank()));
+    static_assert(patchBankDataSize == patchBankToBytes<makeDefaultPatchBank()>().size());
     static_assert((sizeof(Flash::Wrapper<SerializedPatchBank>) % 4096) == 0);
     constexpr PatchChange p{.iPatch=0, .patch={}};
-    static_assert(Serialize::patchChangeDataSize == Serialize::objToBytes<PatchChange, p, Serialize::patchChangeDataSize>().size());
+    static_assert(patchChangeDataSize == Serialize::objToBytes<PatchChange, p, patchChangeDataSize>().size());
     constexpr PatchNameChange name{.iPatch=0, .name=""};
-    static_assert(Serialize::patchNameChangeDataSize == Serialize::objToBytes<PatchNameChange, name, Serialize::patchNameChangeDataSize>().size());
+    static_assert(patchNameChangeDataSize == Serialize::objToBytes<PatchNameChange, name, patchNameChangeDataSize>().size());
     constexpr PatchSettingChange change1{.iPatch=0, .field=0, .value=0};
-    static_assert(Serialize::patchSettingChangeDataSize == Serialize::objToBytes<PatchSettingChange, change1, Serialize::patchSettingChangeDataSize>().size());
+    static_assert(patchSettingChangeDataSize == Serialize::objToBytes<PatchSettingChange, change1, patchSettingChangeDataSize>().size());
     constexpr PatchOpChange change2{.iPatch=0, .iOp=0, .field=0, .value=0};
-    static_assert(Serialize::opParamsChangeDataSize == Serialize::objToBytes<PatchOpChange, change2, Serialize::opParamsChangeDataSize>().size());
+    static_assert(opParamsChangeDataSize == Serialize::objToBytes<PatchOpChange, change2, opParamsChangeDataSize>().size());
     static_assert((sizeof(Flash::Wrapper<SerializedPatchBank>) % 4096) == 0);
 }
 
@@ -101,7 +101,7 @@ bool loadCurrentPatchBank(const auto& storage)
 {
     static PatchBank patchBankNew; // must be static because stack space is limited
     if (Serialize::readObject(storage, &patchBankNew)) {
-        if (!patchBankNew.isValid()) {
+        if (!isValid(patchBankNew)) {
             dputs("loadCurrentPatchBank: ERROR: Bad patch data");
             Error::set<Error::Err::BadPatchData>();
             return false;

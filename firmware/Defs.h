@@ -53,9 +53,6 @@ constexpr unsigned sizeLookupTable = (1 << cbitsLookupIndex) + 1;
 /// @brief Modulation is a signed value added to the current phase value
 using modulation_t = int32_t;
 
-/// @brief Number of patches in a Dexy::Patches::PatchBank
-constexpr unsigned numPatches = 32;
-
 /// @brief Number of operators in a Dexy::Patches::Patch
 constexpr unsigned numOperators = 6;
 
