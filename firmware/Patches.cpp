@@ -47,7 +47,7 @@ constexpr bool isValid(const PatchBank& obj)
 template<PatchBank patchBank>
 static consteval SerializedPatchBank patchBankToBytes()
 {
-    return Serialize::objToBytes<PatchBank, patchBank, Serialize::patchBankDataSize>();
+    return Serialize::objToBytes<PatchBank, patchBank, patchBankDataSize>();
 }
 
 /// @brief The initial patch data that is loaded into the PatchBank at startup
@@ -66,16 +66,16 @@ static PatchBank patchBankCurrent;
 static consteval void verifyData()
 {
     static_assert(isValid(makeDefaultPatchBank()));
-    static_assert(Serialize::patchBankDataSize == patchBankToBytes<makeDefaultPatchBank()>().size());
+    static_assert(patchBankDataSize == patchBankToBytes<makeDefaultPatchBank()>().size());
     static_assert((sizeof(Flash::Wrapper<SerializedPatchBank>) % 4096) == 0);
     constexpr PatchChange p{.iPatch=0, .patch={}};
-    static_assert(Serialize::patchChangeDataSize == Serialize::objToBytes<PatchChange, p, Serialize::patchChangeDataSize>().size());
+    static_assert(patchChangeDataSize == Serialize::objToBytes<PatchChange, p, patchChangeDataSize>().size());
     constexpr PatchNameChange name{.iPatch=0, .name=""};
-    static_assert(Serialize::patchNameChangeDataSize == Serialize::objToBytes<PatchNameChange, name, Serialize::patchNameChangeDataSize>().size());
+    static_assert(patchNameChangeDataSize == Serialize::objToBytes<PatchNameChange, name, patchNameChangeDataSize>().size());
     constexpr PatchSettingChange change1{.iPatch=0, .field=0, .value=0};
-    static_assert(Serialize::patchSettingChangeDataSize == Serialize::objToBytes<PatchSettingChange, change1, Serialize::patchSettingChangeDataSize>().size());
+    static_assert(patchSettingChangeDataSize == Serialize::objToBytes<PatchSettingChange, change1, patchSettingChangeDataSize>().size());
     constexpr PatchOpChange change2{.iPatch=0, .iOp=0, .field=0, .value=0};
-    static_assert(Serialize::opParamsChangeDataSize == Serialize::objToBytes<PatchOpChange, change2, Serialize::opParamsChangeDataSize>().size());
+    static_assert(opParamsChangeDataSize == Serialize::objToBytes<PatchOpChange, change2, opParamsChangeDataSize>().size());
     static_assert((sizeof(Flash::Wrapper<SerializedPatchBank>) % 4096) == 0);
 }
 

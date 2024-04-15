@@ -31,6 +31,13 @@ constexpr unsigned numPatches = V1::numPatches;
 /// @details There is one instance of PatchBank containing the current set of patches.
 using PatchBank = V1::PatchBank;
 
+// Sizes of serialized data objects
+// These must be defined explicitly but the sizes are verified at compile time just in case.
+// There are no variable-size data members in our serializable types.
+// Note that these sizes are different from sizeof(x) because serialization packs differently.
+constexpr size_t patchSize = V1::patchSize;
+constexpr size_t patchBankDataSize = V1::patchBankDataSize;
+
 constexpr bool isValid(const EnvParams& obj);   ///< Does the object contain valid data?
 
 constexpr bool isValid(const OpParams& obj);    ///< Does the object contain valid data?
@@ -48,7 +55,7 @@ void init();
 Patch& getPatch(unsigned i);
 
 /// @brief Serialized data blob containing a PatchBank
-using SerializedPatchBank = std::array<char, Serialize::patchBankDataSize>;
+using SerializedPatchBank = std::array<char, patchBankDataSize>;
 
 /// @brief Load the current PatchBank from a serialized data blob
 /// @param storage 

@@ -53,4 +53,14 @@ struct PatchBank
     std::array<Patch, numPatches> patches;
 };
 
+// Sizes of serialized data objects
+// These must be defined explicitly but the sizes are verified at compile time just in case.
+// There are no variable-size data members in our serializable types.
+// Note that these sizes are different from sizeof(x) because serialization packs differently.
+constexpr size_t envParamsSize = 11;
+constexpr size_t opParamsSize = 8 + envParamsSize;
+constexpr size_t patchSize = patchNameLen + 3 + 6 * opParamsSize;
+constexpr size_t patchBankSize = numPatches * patchSize;
+constexpr size_t patchBankDataSize = Serialize::serializeHdrSize + patchBankSize;
+
 } } } // namespace Patches::V1

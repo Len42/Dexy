@@ -31,6 +31,12 @@ struct PatchOpChange {
     param_t value;      ///< New setting value
 };
 
+// Serialized data sizes
+constexpr size_t opParamsChangeDataSize = Serialize::serializeHdrSize + 5;
+constexpr size_t patchSettingChangeDataSize = Serialize::serializeHdrSize + 4;
+constexpr size_t patchNameChangeDataSize = Serialize::serializeHdrSize + 1 + patchNameLen;
+constexpr size_t patchChangeDataSize = Serialize::serializeHdrSize + 1 + patchSize;
+
 /// @brief Update a Patch in the current PatchBank
 /// @param change Updated patch data downloaded over USB
 void mergePatchChange(const PatchChange& change);

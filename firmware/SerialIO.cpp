@@ -126,12 +126,12 @@ template<>
 IN_FLASH("SerialIO")
 void doCommand<Command::Upload>()
 {
-    if (Patches::saveCurrentPatchBank(&dataBuf) != Serialize::patchBankDataSize) {
+    if (Patches::saveCurrentPatchBank(&dataBuf) != Patches::patchBankDataSize) {
         Error::set<Error::Err::BadPatchData>();
         return;
     }
     int c = serialWriteData(dataBuf);
-    if (c != Serialize::patchBankDataSize) {
+    if (c != Patches::patchBankDataSize) {
         Error::set<Error::Err::SerialIO>();
         return;
     }
@@ -170,7 +170,7 @@ IN_FLASH("SerialIO")
 void doCommand<Command::UpdPatch>()
 {
     Patches::PatchChange change;
-    if (!serialReadData(&dataBuf, Serialize::patchChangeDataSize)) {
+    if (!serialReadData(&dataBuf, Patches::patchChangeDataSize)) {
         // ? serialDrainInput();
         return;
     }
@@ -187,7 +187,7 @@ IN_FLASH("SerialIO")
 void doCommand<Command::UpdName>()
 {
     Patches::PatchNameChange change;
-    if (!serialReadData(&dataBuf, Serialize::patchNameChangeDataSize)) {
+    if (!serialReadData(&dataBuf, Patches::patchNameChangeDataSize)) {
         // ? serialDrainInput();
         return;
     }
@@ -204,7 +204,7 @@ IN_FLASH("SerialIO")
 void doCommand<Command::UpdSetting>()
 {
     Patches::PatchSettingChange change;
-    if (!serialReadData(&dataBuf, Serialize::patchSettingChangeDataSize)) {
+    if (!serialReadData(&dataBuf, Patches::patchSettingChangeDataSize)) {
         // ? serialDrainInput();
         return;
     }
@@ -221,7 +221,7 @@ IN_FLASH("SerialIO")
 void doCommand<Command::UpdOperator>()
 {
     Patches::PatchOpChange change;
-    if (!serialReadData(&dataBuf, Serialize::opParamsChangeDataSize)) {
+    if (!serialReadData(&dataBuf, Patches::opParamsChangeDataSize)) {
         // ? serialDrainInput();
         return;
     }
