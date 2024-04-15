@@ -17,20 +17,7 @@ namespace Dexy {
 /// @brief Data serialization and deserialization using the zpp::bits library
 namespace Serialize {
 
-// Sizes of serialized data objects
-// These must be defined explicitly but the sizes are verified at compile time just in case.
-// There are no variable-size data members in our serializable types.
-// Note that these sizes are different from sizeof(x) because serialization packs differently.
 constexpr size_t serializeHdrSize = 6;
-constexpr size_t envParamsSize = 13 + 8;
-constexpr size_t opParamsSize = 8 + envParamsSize;
-constexpr size_t patchSize = 16 + 3 + 6 * opParamsSize;
-constexpr size_t patchBankSize = 32 * patchSize;
-constexpr size_t opParamsChangeDataSize = serializeHdrSize + 5;
-constexpr size_t patchSettingChangeDataSize = serializeHdrSize + 4;
-constexpr size_t patchNameChangeDataSize = serializeHdrSize + 1 + 16;
-constexpr size_t patchChangeDataSize = serializeHdrSize + 1 + patchSize;
-constexpr size_t patchBankDataSize = serializeHdrSize + patchBankSize;
 
 /// @brief Type of serializeCookie
 using cookie_t = uint32_t;
