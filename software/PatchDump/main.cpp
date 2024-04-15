@@ -5,14 +5,9 @@
 #include <format>
 #include <array>
 
-#define IN_FLASH(x)
-#define dputs(str) puts(str)
-
 // header files from firmware
 #include "Defs.h"
-#include "Error.h"
-#include "Serialize.h"
-#include "Patches.h"
+#include "Patches1.h"
 
 // Definitions for CmdLine.h
 //#define CMDLINE_PROG_NAME "patchdump"
@@ -37,7 +32,8 @@ int main(int argc, char* argv[])
         static constexpr char inputFileName[] = "stdin"; // TODO
         std::cout << std::format("Patch file: {}\n", inputFileName);
 
-        // TODO: read patch file
+        // TODO: read patch file header
+        // then read appropriate type of patch
 
         // TODO: dump patch data
 
