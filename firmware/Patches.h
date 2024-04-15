@@ -14,7 +14,7 @@ struct EnvParams
     param_t sustain = max_param_t;      ///< Sustain level
     param_t release = 0;                ///< Release rate
     bool loop = false;                  ///< If true, the envelope repeats indefinitely
-    constexpr bool isValid() const;     ///< Does this contain valid settings?
+    //constexpr bool isValid() const;     ///< Does this contain valid settings?
 };
 
 /// @brief Operator parameters
@@ -26,7 +26,7 @@ struct OpParams
     bool useEnvelope = true;            ///< Is output level modulated by the envelope?
     EnvParams env;                      ///< Envelope parameters
     param_t ampModSens = 0;             ///< Operator sensitivity to amplitude modulation
-    constexpr bool isValid() const;     ///< Does this contain valid settings?
+    //constexpr bool isValid() const;     ///< Does this contain valid settings?
 };
 
 /// @brief Length of a patch's name
@@ -42,7 +42,7 @@ struct Patch
     uint8_t algorithm = 0;
     param_t feedbackAmount = max_param_t;
     patchName_t name = {' '};
-    constexpr bool isValid() const;     ///< Does this contain valid settings?
+    //constexpr bool isValid() const;     ///< Does this contain valid settings?
 };
 
 /// @brief The set of patches that are stored in the module
@@ -53,8 +53,16 @@ struct PatchBank
     std::array<Patch, numPatches> patches;
 
     /// @brief Are all the patches valid?
-    constexpr bool isValid() const;
+    //constexpr bool isValid() const;
 };
+
+constexpr bool isValid(const EnvParams& obj);   ///< Does the object contain valid data?
+
+constexpr bool isValid(const OpParams& obj);    ///< Does the object contain valid data?
+
+constexpr bool isValid(const Patch& obj);       ///< Does the object contain valid data?
+
+constexpr bool isValid(const PatchBank& obj);   ///< Does the object contain valid data?
 
 /// @brief Initialization - must be called at startup
 void init();
