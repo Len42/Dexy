@@ -1,60 +1,32 @@
 #pragma once
 
+#include "Patches1.h"
+
 namespace Dexy {
 
 /// @brief Patch definition and storage
 namespace Patches {
 
+// Use latest version of Patch struct definitions
+
 /// @brief Envelope parameters
-struct EnvParams
-{
-    param_t delay = 0;                  ///< Delay time
-    param_t attack = 0;                 ///< Attack rate
-    param_t decay = 0;                  ///< Decay rate
-    param_t sustain = max_param_t;      ///< Sustain level
-    param_t release = 0;                ///< Release rate
-    bool loop = false;                  ///< If true, the envelope repeats indefinitely
-    //constexpr bool isValid() const;     ///< Does this contain valid settings?
-};
+using EnvParams = V1::EnvParams;
 
 /// @brief Operator parameters
-struct OpParams
-{
-    bool fixedFreq = false;             ///< Frequency is either fixed or set by pitch CV
-    uint16_t noteOrFreq = freqRatio1;   ///< freqRatio_t or midiNote_t depending on fixedFreq
-    param_t outputLevel = max_param_t;  ///< Output level nominal maximum
-    bool useEnvelope = true;            ///< Is output level modulated by the envelope?
-    EnvParams env;                      ///< Envelope parameters
-    param_t ampModSens = 0;             ///< Operator sensitivity to amplitude modulation
-    //constexpr bool isValid() const;     ///< Does this contain valid settings?
-};
+using OpParams = V1::OpParams;
 
 /// @brief Length of a patch's name
-static constexpr unsigned patchNameLen = 16;
+static constexpr unsigned patchNameLen = V1::patchNameLen;
 
 /// @brief Patch name is a fixed-size array of characters (not 0-terminated)
-using patchName_t = std::array<char, patchNameLen>;
+using patchName_t = V1::patchName_t;
 
 /// @brief Parameters of a single patch
-struct Patch
-{
-    std::array<OpParams, numOperators> opParams;
-    uint8_t algorithm = 0;
-    param_t feedbackAmount = max_param_t;
-    patchName_t name = {' '};
-    //constexpr bool isValid() const;     ///< Does this contain valid settings?
-};
+using Patch = V1::Patch;
 
 /// @brief The set of patches that are stored in the module
 /// @details There is one instance of PatchBank containing the current set of patches.
-struct PatchBank
-{
-    /// @brief Collection of patches
-    std::array<Patch, numPatches> patches;
-
-    /// @brief Are all the patches valid?
-    //constexpr bool isValid() const;
-};
+using PatchBank = V1::PatchBank;
 
 constexpr bool isValid(const EnvParams& obj);   ///< Does the object contain valid data?
 
