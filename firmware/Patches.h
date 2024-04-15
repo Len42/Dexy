@@ -24,6 +24,9 @@ using patchName_t = V1::patchName_t;
 /// @brief Parameters of a single patch
 using Patch = V1::Patch;
 
+/// @brief Number of patches in a Dexy::Patches::PatchBank
+constexpr unsigned numPatches = V1::numPatches;
+
 /// @brief The set of patches that are stored in the module
 /// @details There is one instance of PatchBank containing the current set of patches.
 using PatchBank = V1::PatchBank;

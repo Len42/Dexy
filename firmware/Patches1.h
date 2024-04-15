@@ -42,6 +42,9 @@ struct Patch
     patchName_t name = {' '};
 };
 
+/// @brief Number of patches in a Dexy::Patches::PatchBank
+constexpr unsigned numPatches = 32;
+
 /// @brief The set of patches that are stored in the module
 /// @details There is one instance of PatchBank containing the current set of patches.
 struct PatchBank
