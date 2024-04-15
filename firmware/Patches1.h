@@ -61,6 +61,5 @@ constexpr size_t envParamsSize = 11;
 constexpr size_t opParamsSize = 8 + envParamsSize;
 constexpr size_t patchSize = patchNameLen + 3 + 6 * opParamsSize;
 constexpr size_t patchBankSize = numPatches * patchSize;
-constexpr size_t patchBankDataSize = Serialize::serializeHdrSize + patchBankSize;
 
 } } } // namespace Patches::V1

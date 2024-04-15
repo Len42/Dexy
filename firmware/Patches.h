@@ -36,7 +36,7 @@ using PatchBank = V1::PatchBank;
 // There are no variable-size data members in our serializable types.
 // Note that these sizes are different from sizeof(x) because serialization packs differently.
 constexpr size_t patchSize = V1::patchSize;
-constexpr size_t patchBankDataSize = V1::patchBankDataSize;
+constexpr size_t patchBankDataSize = Serialize::serializeHdrSize + V1::patchBankSize;
 
 constexpr bool isValid(const EnvParams& obj);   ///< Does the object contain valid data?
 
