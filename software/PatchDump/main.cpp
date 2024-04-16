@@ -38,7 +38,6 @@ constexpr size_t serializeHdrSize = sizeof(serializeCookie) + sizeof(version_t);
 
 // Maximum file size, based on the largest version of serialized patch data
 constexpr size_t maxFileSize = serializeHdrSize + Dexy::Patches::V1::patchBankSize;
-// TODO: test with larger size
 
 static std::string inputFileName;
 
@@ -134,7 +133,8 @@ static auto LoadPatchBank(auto storage)
 static void DumpPatch(std::ostream& output,
                       const Dexy::Patches::V1::Patch& patch)
 {
-    output << std::format("Patch,\"{}\"\n", TrimBlanks(std::string_view(patch.name)));
+    output << std::format("Patch,\"{}\"\n",
+        TrimBlanks(std::string_view(patch.name)));
 }
 
 static void DumpPatchBank(std::ostream& output,
