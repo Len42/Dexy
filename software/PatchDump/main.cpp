@@ -58,6 +58,21 @@ static std::string inputFileName;
     throwError(std::format("{} {}", message, inputFileName).c_str());
 }
 
+static std::string_view TrimBlanks(std::string_view str)
+{
+    size_t start = str.find_first_not_of(" ");
+    if (start == std::string_view::npos) {
+        return std::string_view();
+    } else {
+        str.remove_prefix(start);
+        size_t end = str.find_last_not_of(" ");
+        if (end != std::string_view::npos) {
+            str.remove_suffix(str.length() - end - 1);
+        }
+        return str;
+    }
+}
+
 static auto ReadFile(std::istream& input)
 {
     // Read one more byte than the max necessary, to check for eof.
@@ -116,19 +131,25 @@ static auto LoadPatchBank(auto storage)
     }
 }
 
+static void DumpPatch(std::ostream& output,
+                      const Dexy::Patches::V1::Patch& patch)
+{
+    output << std::format("Patch,\"{}\"\n", TrimBlanks(std::string_view(patch.name)));
+}
+
 static void DumpPatchBank(std::ostream& output,
                           const Dexy::Patches::V1::PatchBank& patchBank)
 {
     DPRINT("DumpPatchBank: Dexy::Patches::V1::PatchBank");
     for (auto&& patch : patchBank.patches) {
-        output << std::format("Patch: {}\n", std::string_view(patch.name));
+        DumpPatch(output, patch);
     }
 }
 
 static void DumpPatchBank(std::ostream& output, int patchBank)
 {
     DPRINT("DumpPatchBank: int");
-    output << std::format("Bogus: {:x}\n", patchBank);
+    output << std::format("Bogus,{:x}\n", patchBank);
 }
 
 static void DumpPatchBank(std::ostream& output, const PatchBank& patchBank)
@@ -167,13 +188,13 @@ int main(int argc, char* argv[])
         }
         std::istream& input = inputFromStdin ? std::cin : inFile;
         input.exceptions(std::istream::badbit); // Throw an exception on stream error
-        output << std::format("File: {}\n", inputFileName);
+        output << std::format("File,\"{}\"\n", inputFileName);
 
         auto storage = ReadFile(input);
 
         auto [version, patchBank] = LoadPatchBank(storage);
 
-        output << std::format("Version: {}\n", version);
+        output << std::format("Version,{}\n", version);
 
         DumpPatchBank(output, patchBank);
 
