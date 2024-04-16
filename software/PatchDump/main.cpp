@@ -32,7 +32,7 @@ using PatchBank = std::variant<Dexy::Patches::V1::PatchBank, /*DEBUG*/int>;
 using cookie_t = uint32_t;
 constexpr cookie_t serializeCookie = 'D'|('e'|('x'|('y'<<8))<<8)<<8; // little-endian
 using version_t = uint16_t;
-constexpr version_t versionMax = 1;
+constexpr version_t versionMax = 2; // DEBUG 1;
 constexpr size_t serializeHdrSize = sizeof(serializeCookie) + sizeof(version_t);
 
 // Maximum file size, based on the largest version of serialized patch data
@@ -65,7 +65,7 @@ static auto ReadFile(std::istream& input)
     size_t numRead = input.gcount();
     DPRINT("ReadFile: numRead={}", numRead);
     if (numRead > maxFileSize) {
-        throwFileError("Bad patch file - excess data");
+        throwFileError("Bad patch file length");
     }
     storage.resize(numRead);
     return storage;
@@ -86,20 +86,33 @@ static version_t CheckHeader(auto& in)
     return version;
 }
 
-static PatchBank LoadPatchBank(auto storage)
+static auto LoadPatchBank(auto storage)
 {
-    PatchBank patchBank;
-    zpp::bits::in in(storage);
-    version_t version = CheckHeader(in);
-    switch (version) {
-    case 1:
-        in(std::get<Dexy::Patches::V1::PatchBank>(patchBank)).or_throw();
-        break;
-    default:
-        throwError("Unrecognized patchbank version");
+    try {
+        PatchBank patchBank;
+        zpp::bits::in in(storage);
+        version_t version = CheckHeader(in);
+        // TODO: indexed access instead of switch - use "{std::in_place_index<i>}"
+        switch (version) {
+        case 1:
+            patchBank = Dexy::Patches::V1::PatchBank(); // TODO: there must be a better way
+            in(std::get<Dexy::Patches::V1::PatchBank>(patchBank)).or_throw();
+            break;
+        case 2:
+            patchBank = int();
+            in(std::get<int>(patchBank)).or_throw();
+            break;
+        default:
+            throwError("Unrecognized patchbank version");
+        }
+        DPRINT("LoadPatchBank: Read patchbank version={}", version);
+        return std::pair{ version, patchBank };
+    } catch (std::system_error& ex) {
+        // Improve the error messages from zpp::bits
+        // TODO: don't format - just "Bad patch file contents" is fine
+        std::string msg = std::format("Bad patch file contents ({}) -", ex.what());
+        throwFileError(msg.c_str());
     }
-    DPRINT("LoadPatchBank: Read patchbank version={}", version);
-    return patchBank;
 }
 
 int main(int argc, char* argv[])
@@ -132,13 +145,13 @@ int main(int argc, char* argv[])
         std::istream& input = inputFromStdin ? std::cin : inFile;
         // Throw an exception on stream error
         input.exceptions(std::istream::badbit);
-        std::cout << std::format("Patch file: {}\n", inputFileName);
+        std::cout << std::format("File: {}\n", inputFileName);
 
         auto storage = ReadFile(input);
 
-        PatchBank patchBank = LoadPatchBank(storage);
+        auto [version, patchBank] = LoadPatchBank(storage);
 
-        // TODO: dump patch data
+        std::cout << std::format("Version: {}\n", version);
 
         return 0;
     } catch (const std::exception& ex) {
