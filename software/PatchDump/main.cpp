@@ -4,6 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <string_view>
 #include <format>
 #include <vector>
 #include <variant>
@@ -115,6 +116,26 @@ static auto LoadPatchBank(auto storage)
     }
 }
 
+static void DumpPatchBank(std::ostream& output,
+                          const Dexy::Patches::V1::PatchBank& patchBank)
+{
+    DPRINT("DumpPatchBank: Dexy::Patches::V1::PatchBank");
+    for (auto&& patch : patchBank.patches) {
+        output << std::format("Patch: {}\n", "TODO"/*std::string_view(patch.name)*/);
+    }
+}
+
+static void DumpPatchBank(std::ostream& output, int patchBank)
+{
+    DPRINT("DumpPatchBank: int");
+    output << std::format("Bogus: {:x}\n", patchBank);
+}
+
+static void DumpPatchBank(std::ostream& output, const PatchBank& patchBank)
+{
+    std::visit([&](auto&& obj) { DumpPatchBank(output, obj); }, patchBank);
+}
+
 int main(int argc, char* argv[])
 {
     try {
@@ -124,6 +145,8 @@ int main(int argc, char* argv[])
         if (CommandLine::GetShowVersion()) {
             PrintBanner();
         }
+
+        std::ostream& output = std::cout;
 
         // Open the input file
         bool inputFromStdin = false;
@@ -143,15 +166,16 @@ int main(int argc, char* argv[])
             throwError("Too many file names");
         }
         std::istream& input = inputFromStdin ? std::cin : inFile;
-        // Throw an exception on stream error
-        input.exceptions(std::istream::badbit);
-        std::cout << std::format("File: {}\n", inputFileName);
+        input.exceptions(std::istream::badbit); // Throw an exception on stream error
+        output << std::format("File: {}\n", inputFileName);
 
         auto storage = ReadFile(input);
 
         auto [version, patchBank] = LoadPatchBank(storage);
 
-        std::cout << std::format("Version: {}\n", version);
+        output << std::format("Version: {}\n", version);
+
+        DumpPatchBank(output, patchBank);
 
         return 0;
     } catch (const std::exception& ex) {
