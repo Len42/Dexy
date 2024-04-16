@@ -5,7 +5,8 @@
 #include <fstream>
 #include <string>
 #include <format>
-#include <array>
+#include <vector>
+#include <variant>
 #include <concepts>
 #include <exception>
 
@@ -15,21 +16,36 @@
 #define CMDLINE_ALLOW_ARGS true
 #define CMDLINE_ARGS_DESCRIPTION "Dexy patchbank file (default stdin)"
 #define CMDLINE_OPTIONS(ITEM) \
-    ITEM(ShowVersion, v, ver, bool, false, "Display the software version at startup")
+    ITEM(ShowVersion, v, ver, bool, false, "Display the software version at startup") \
+    ITEM(Debug, d, debug, bool, false, "Display debugging info")
 #include "CmdLine.h"
 #include "Banner.h"
+#include "zpp_bits.h"
 
 // header files from firmware
 #include "Defs.h"
 #include "Patches1.h"
 
+using PatchBank = std::variant<Dexy::Patches::V1::PatchBank, /*DEBUG*/int>;
+
 // Patch file header fields
-constexpr uint32_t serializeCookie = 'D'|('e'|('x'|('y'<<8))<<8)<<8; // little-endian
+using cookie_t = uint32_t;
+constexpr cookie_t serializeCookie = 'D'|('e'|('x'|('y'<<8))<<8)<<8; // little-endian
 using version_t = uint16_t;
 constexpr version_t versionMax = 1;
 constexpr size_t serializeHdrSize = sizeof(serializeCookie) + sizeof(version_t);
 
+// Maximum file size, based on the largest version of serialized patch data
+constexpr size_t maxFileSize = serializeHdrSize + Dexy::Patches::V1::patchBankSize;
+// TODO: test with larger size
+
 static std::string inputFileName;
+
+// DPRINT - Print output only if the debug flag is set
+#define DPRINT(msg, ...) \
+    if (CommandLine::GetDebug()) { \
+        std::cout << std::format(msg, __VA_ARGS__) << '\n'; \
+    }
 
 [[noreturn]] static void throwError(const char* message)
 {
@@ -41,37 +57,49 @@ static std::string inputFileName;
     throwError(std::format("{} {}", message, inputFileName).c_str());
 }
 
-template<std::integral NUM>
-static bool ReadNum(std::istream& input, NUM* pnum)
+static auto ReadFile(std::istream& input)
 {
-    input.read(reinterpret_cast<char*>(pnum), sizeof(NUM));
-    return bool(input);
+    // Read one more byte than the max necessary, to check for eof.
+    std::vector<char> storage(maxFileSize + 1);
+    input.read(storage.data(), maxFileSize + 1);
+    size_t numRead = input.gcount();
+    DPRINT("ReadFile: numRead={}", numRead);
+    if (numRead > maxFileSize) {
+        throwFileError("Bad patch file - excess data");
+    }
+    storage.resize(numRead);
+    return storage;
 }
 
-static version_t ReadHeader(std::istream& input)
+static version_t CheckHeader(auto& in)
 {
-    uint32_t cookie;
-    ReadNum(input, &cookie);
-    if (!input || cookie != serializeCookie) {
+    cookie_t cookie;
+    version_t version;
+    in(cookie, version).or_throw();
+    DPRINT("CheckHeader: cookie={:x} version={}", cookie, version);
+    if (cookie != serializeCookie) {
         throwError("Bad patch file header");
     }
-    version_t version;
-    ReadNum(input, &version);
-    if (!input || version == 0 || version > versionMax) {
+    if (version == 0 || version > versionMax) {
         throwError("Bad patch file version");
     }
     return version;
 }
 
-static bool CheckEof(std::istream& input)
+static PatchBank LoadPatchBank(auto storage)
 {
-    if (input.eof()) {
-        return false;
-    } else {
-        char ch;
-        input >> ch;
-        return input.eof();
+    PatchBank patchBank;
+    zpp::bits::in in(storage);
+    version_t version = CheckHeader(in);
+    switch (version) {
+    case 1:
+        in(std::get<Dexy::Patches::V1::PatchBank>(patchBank)).or_throw();
+        break;
+    default:
+        throwError("Unrecognized patchbank version");
     }
+    DPRINT("LoadPatchBank: Read patchbank version={}", version);
+    return patchBank;
 }
 
 int main(int argc, char* argv[])
@@ -106,14 +134,9 @@ int main(int argc, char* argv[])
         input.exceptions(std::istream::badbit);
         std::cout << std::format("Patch file: {}\n", inputFileName);
 
-        version_t version = ReadHeader(input);
-        
-        // TODO: read appropriate type of patch
+        auto storage = ReadFile(input);
 
-        // Check for EOF
-        if (!CheckEof(input)) {
-            throwFileError("Bad patch file - excess data");
-        }
+        PatchBank patchBank = LoadPatchBank(storage);
 
         // TODO: dump patch data
 

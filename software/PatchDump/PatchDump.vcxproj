@@ -150,6 +150,7 @@
     <ClInclude Include="CmdLine.h" />
     <ClInclude Include="system.h" />
     <ClInclude Include="version.h" />
+    <ClInclude Include="zpp_bits.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="version.htemplate" />
