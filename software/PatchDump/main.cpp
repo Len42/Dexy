@@ -121,7 +121,7 @@ static void DumpPatchBank(std::ostream& output,
 {
     DPRINT("DumpPatchBank: Dexy::Patches::V1::PatchBank");
     for (auto&& patch : patchBank.patches) {
-        output << std::format("Patch: {}\n", "TODO"/*std::string_view(patch.name)*/);
+        output << std::format("Patch: {}\n", std::string_view(patch.name));
     }
 }
 
