@@ -107,10 +107,9 @@ static auto LoadPatchBank(auto storage)
         PatchBank patchBank;
         zpp::bits::in in(storage);
         version_t version = CheckHeader(in);
-        // TODO: indexed access instead of switch - use "{std::in_place_index<i>}"
         switch (version) {
         case 1:
-            patchBank = Dexy::Patches::V1::PatchBank(); // TODO: there must be a better way
+            patchBank = Dexy::Patches::V1::PatchBank();
             in(std::get<Dexy::Patches::V1::PatchBank>(patchBank)).or_throw();
             break;
         case 2:
