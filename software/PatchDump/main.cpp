@@ -156,7 +156,10 @@ static void DumpOpField(std::ostream& output,
     output << '\n';
 }
 
-// TODO: Parameterize for V1 or V2
+// TODO: Parameterize for V1 or V2.
+// V2 will have its own function that calls the parameterized version
+// for the base set of params.
+
 static void DumpPatch(std::ostream& output,
                       const Dexy::Patches::V1::Patch& patch)
 {
