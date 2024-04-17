@@ -134,7 +134,7 @@ static void DumpPatch(std::ostream& output,
                       const Dexy::Patches::V1::Patch& patch)
 {
     output << std::format("Patch,\"{}\"\n",
-        TrimBlanks(std::string_view(patch.name)));
+        TrimBlanks(std::string_view(std::begin(patch.name), std::end(patch.name))));
 }
 
 static void DumpPatchBank(std::ostream& output,
