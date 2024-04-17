@@ -129,6 +129,21 @@ static auto LoadPatchBank(auto storage)
     }
 }
 
+// TODO: Generalize these functions to make them a _bit_ less messy
+
+
+static void DumpEnvField(std::ostream& output,
+                         const Dexy::Patches::V1::Patch& patch,
+                         std::string_view name,
+                         auto Dexy::Patches::V1::EnvParams::* pfield)
+{
+    output << name;
+    for (auto&& op : patch.opParams) {
+        output << std::format(",{}", op.env.*pfield);
+    }
+    output << '\n';
+}
+
 static void DumpOpField(std::ostream& output,
                         const Dexy::Patches::V1::Patch& patch,
                         std::string_view name,
@@ -155,8 +170,13 @@ static void DumpPatch(std::ostream& output,
     DumpOpField(output, patch, "NoteOrFrequency", &OpParams::noteOrFreq);
     DumpOpField(output, patch, "OutputLevel", &OpParams::outputLevel);
     DumpOpField(output, patch, "UseEnvelope", &OpParams::useEnvelope);
-    DumpOpField(output, patch, "\"Amp. Mod. Sens.\"", &OpParams::ampModSens);
-    // TODO: EnvParams
+    DumpOpField(output, patch, "AmpModSens", &OpParams::ampModSens);
+    DumpEnvField(output, patch, "EnvDelay", &EnvParams::delay);
+    DumpEnvField(output, patch, "EnvAttack", &EnvParams::attack);
+    DumpEnvField(output, patch, "EnvDecay", &EnvParams::decay);
+    DumpEnvField(output, patch, "EnvSustain", &EnvParams::sustain);
+    DumpEnvField(output, patch, "EnvRelease", &EnvParams::release);
+    DumpEnvField(output, patch, "EnvLoop", &EnvParams::loop);
 }
 
 static void DumpPatchBank(std::ostream& output,
