@@ -129,11 +129,34 @@ static auto LoadPatchBank(auto storage)
     }
 }
 
+static void DumpOpField(std::ostream& output,
+                        const Dexy::Patches::V1::Patch& patch,
+                        std::string_view name,
+                        auto Dexy::Patches::V1::OpParams::* pfield)
+{
+    output << name;
+    for (auto&& op : patch.opParams) {
+        output << std::format(",{}", op.*pfield);
+    }
+    output << '\n';
+}
+
+// TODO: Parameterize for V1 or V2
 static void DumpPatch(std::ostream& output,
                       const Dexy::Patches::V1::Patch& patch)
 {
+    using namespace Dexy::Patches::V1;
     output << std::format("Patch,\"{}\"\n",
         TrimBlanks(std::string_view(std::begin(patch.name), std::end(patch.name))));
+    output << std::format("Algorithm,{}\n", patch.algorithm + 1);
+    output << std::format("Feedback,{}\n", patch.feedbackAmount);
+    DumpOpField(output, patch, "FixedFrequency", &OpParams::fixedFreq);
+    // TODO: Smart display of MIDI note or frequency
+    DumpOpField(output, patch, "NoteOrFrequency", &OpParams::noteOrFreq);
+    DumpOpField(output, patch, "OutputLevel", &OpParams::outputLevel);
+    DumpOpField(output, patch, "UseEnvelope", &OpParams::useEnvelope);
+    DumpOpField(output, patch, "\"Amp. Mod. Sens.\"", &OpParams::ampModSens);
+    // TODO: EnvParams
 }
 
 static void DumpPatchBank(std::ostream& output,
@@ -167,6 +190,7 @@ int main(int argc, char* argv[])
         }
 
         std::ostream& output = std::cout;
+        output << "Field,Value1,Value2,Value3,Value4,Value5,Value6\n";
 
         // Open the input file
         bool inputFromStdin = false;
