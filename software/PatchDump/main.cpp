@@ -129,29 +129,24 @@ static auto LoadPatchBank(auto storage)
     }
 }
 
-// TODO: Generalize these functions to make them a _bit_ less messy
-
-
-static void DumpEnvField(std::ostream& output,
-                         const Dexy::Patches::V1::Patch& patch,
-                         std::string_view name,
-                         auto Dexy::Patches::V1::EnvParams::* pfield)
-{
-    output << name;
-    for (auto&& op : patch.opParams) {
-        output << std::format(",{}", op.env.*pfield);
-    }
-    output << '\n';
-}
-
-static void DumpOpField(std::ostream& output,
-                        const Dexy::Patches::V1::Patch& patch,
-                        std::string_view name,
-                        auto Dexy::Patches::V1::OpParams::* pfield)
+template<class PATCH, class OP>
+static void DumpOpField(std::ostream& output, const PATCH& patch,
+                        std::string_view name, auto OP::* pfield)
 {
     output << name;
     for (auto&& op : patch.opParams) {
         output << std::format(",{}", op.*pfield);
+    }
+    output << '\n';
+}
+
+template<class PATCH, class OP, class SUB>
+static void DumpOpField(std::ostream& output, const PATCH& patch,
+                        std::string_view name, SUB OP::* psub, auto SUB::* pfield)
+{
+    output << name;
+    for (auto&& op : patch.opParams) {
+        output << std::format(",{}", op.*psub.*pfield);
     }
     output << '\n';
 }
@@ -168,18 +163,19 @@ static void DumpPatch(std::ostream& output,
         TrimBlanks(std::string_view(std::begin(patch.name), std::end(patch.name))));
     output << std::format("Algorithm,{}\n", patch.algorithm + 1);
     output << std::format("Feedback,{}\n", patch.feedbackAmount);
+    // Display per-operator fields in rows for readability
     DumpOpField(output, patch, "FixedFrequency", &OpParams::fixedFreq);
     // TODO: Smart display of MIDI note or frequency
     DumpOpField(output, patch, "NoteOrFrequency", &OpParams::noteOrFreq);
     DumpOpField(output, patch, "OutputLevel", &OpParams::outputLevel);
     DumpOpField(output, patch, "UseEnvelope", &OpParams::useEnvelope);
     DumpOpField(output, patch, "AmpModSens", &OpParams::ampModSens);
-    DumpEnvField(output, patch, "EnvDelay", &EnvParams::delay);
-    DumpEnvField(output, patch, "EnvAttack", &EnvParams::attack);
-    DumpEnvField(output, patch, "EnvDecay", &EnvParams::decay);
-    DumpEnvField(output, patch, "EnvSustain", &EnvParams::sustain);
-    DumpEnvField(output, patch, "EnvRelease", &EnvParams::release);
-    DumpEnvField(output, patch, "EnvLoop", &EnvParams::loop);
+    DumpOpField(output, patch, "EnvDelay", &OpParams::env, &EnvParams::delay);
+    DumpOpField(output, patch, "EnvAttack", &OpParams::env, &EnvParams::attack);
+    DumpOpField(output, patch, "EnvDecay", &OpParams::env, &EnvParams::decay);
+    DumpOpField(output, patch, "EnvSustain", &OpParams::env, &EnvParams::sustain);
+    DumpOpField(output, patch, "EnvRelease", &OpParams::env, &EnvParams::release);
+    DumpOpField(output, patch, "EnvLoop", &OpParams::env, &EnvParams::loop);
 }
 
 static void DumpPatchBank(std::ostream& output,
