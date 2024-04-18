@@ -8,6 +8,7 @@
 #include <format>
 #include <vector>
 #include <variant>
+#include <cmath>
 #include <concepts>
 #include <exception>
 
@@ -155,6 +156,44 @@ static void DumpOpField(std::ostream& output, const PATCH& patch,
     output << '\n';
 }
 
+static std::string NoteToString(Dexy::midiNote_t midiNote)
+{
+    int noteNum = midiNote / 256;
+    int frac = midiNote % 256;
+    if (frac > 127) {
+        ++noteNum;
+        frac -= 256;
+    } else if (frac < -127) {
+        --noteNum;
+        frac += 256;
+    }
+    int octave = noteNum / 12 - 1;
+    int note = noteNum % 12;
+    if (note < 0) {
+        note += 12;
+    }
+    int cents = (int)((double)frac * 100 / Dexy::midiNoteSemitone);
+    static constexpr std::string_view noteNames[] = {
+      "C"sv,"C♯"sv,"D"sv,"E♭"sv,"E"sv,"F"sv,"F♯"sv,"G"sv,"G♯"sv,"A"sv,"B♭"sv,"B"sv
+    };
+    std::string_view noteName = noteNames[note];
+    if (cents == 0) {
+        return std::format("{}{}", noteName, octave);
+    } else {
+        return std::format("{}{}{:+}", noteName, octave, cents);
+    }
+}
+
+static double NoteToHz(Dexy::midiNote_t midiNote)
+{
+    return 440 * std::exp2(((double)midiNote / 256 - 69) / 12);
+}
+
+static std::string FreqToHzString(Dexy::midiNote_t midiNote)
+{
+    return std::format("{:.4}Hz", NoteToHz(midiNote)); // TODO: format?
+}
+
 // TODO: Parameterize for V1 or V2.
 // V2 will have its own function that calls the parameterized version
 // for the base set of params.
@@ -169,8 +208,23 @@ static void DumpPatch(std::ostream& output,
     output << std::format("Feedback,{}\n", patch.feedbackAmount);
     // Display per-operator fields in rows for readability
     DumpOpField(output, patch, "FixedFrequency", &OpParams::fixedFreq);
-    // TODO: Smart display of MIDI note or frequency
-    DumpOpField(output, patch, "NoteOrFrequency", &OpParams::noteOrFreq);
+    // Smart display of MIDI note or frequency
+    output << "RatioOrFrequency";
+    for (auto&& op : patch.opParams) {
+        if (op.fixedFreq) {
+            // Fixed pitch
+            Dexy::midiNote_t note = Dexy::midiNote_t(op.noteOrFreq);
+            std::string stNote = (note >= 12 * Dexy::midiNoteSemitone)
+                ? NoteToString(note)
+                : FreqToHzString(note);
+            output << std::format(",{}", stNote);
+        } else {
+            // Frequency ratio
+            output << std::format(",{:.4}",
+                double(Dexy::freqRatio_t(op.noteOrFreq)) / Dexy::freqRatio1);
+        }
+    }
+    output << '\n';
     DumpOpField(output, patch, "OutputLevel", &OpParams::outputLevel);
     DumpOpField(output, patch, "UseEnvelope", &OpParams::useEnvelope);
     DumpOpField(output, patch, "AmpModSens", &OpParams::ampModSens);
