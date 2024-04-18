@@ -8,6 +8,7 @@
 #include <format>
 #include <vector>
 #include <variant>
+#include <algorithm>
 #include <concepts>
 #include <exception>
 
@@ -26,18 +27,22 @@
 // header files from firmware
 #include "Defs.h"
 #include "Patches1.h"
+#include "Patches2.h"
 
-using PatchBank = std::variant<Dexy::Patches::V1::PatchBank, /*DEBUG*/int>;
+using PatchBank = std::variant<Dexy::Patches::V1::PatchBank,
+                                Dexy::Patches::V2::PatchBank,
+                                /*DEBUG*/int>;
 
 // Patch file header fields
 using cookie_t = uint32_t;
 constexpr cookie_t serializeCookie = 'D'|('e'|('x'|('y'<<8))<<8)<<8; // little-endian
 using version_t = uint16_t;
-constexpr version_t versionMax = 2; // DEBUG 1;
+constexpr version_t versionMax = 3; // DEBUG 2;
 constexpr size_t serializeHdrSize = sizeof(serializeCookie) + sizeof(version_t);
 
 // Maximum file size, based on the largest version of serialized patch data
-constexpr size_t maxFileSize = serializeHdrSize + Dexy::Patches::V1::patchBankSize;
+constexpr size_t maxFileSize = serializeHdrSize
+    + std::max(Dexy::Patches::V1::patchBankSize, Dexy::Patches::V2::patchBankSize);
 
 static std::string inputFileName;
 
@@ -113,13 +118,21 @@ static auto LoadPatchBank(auto storage)
             in(std::get<Dexy::Patches::V1::PatchBank>(patchBank)).or_throw();
             break;
         case 2:
+            patchBank = Dexy::Patches::V2::PatchBank();
+            in(std::get<Dexy::Patches::V2::PatchBank>(patchBank)).or_throw();
+            break;
+        case 3:
             patchBank = int();
             in(std::get<int>(patchBank)).or_throw();
             break;
         default:
-            throwError("Unrecognized patchbank version");
+            throwFileError("Unrecognized patchbank version");
         }
         DPRINT("LoadPatchBank: Read patchbank version={}", version);
+        // There should be no data left in the file
+        if (!in.remaining_data().empty()) {
+            throwFileError("Bad patch file length");
+        }
         return std::pair{ version, patchBank };
     } catch (std::system_error& ex) {
         // Improve the error messages from zpp::bits
@@ -151,37 +164,56 @@ static void DumpOpField(std::ostream& output, const PATCH& patch,
     output << '\n';
 }
 
-// TODO: Parameterize for V1 or V2.
-// V2 will have its own function that calls the parameterized version
-// for the base set of params.
+// TODO: Parameterize for V1 or V2:
+// Make this function a template, call it DumpPatchCommon, call it from
+// specialized overloads of DumpPatch
+// TODO: maybe make a concept, just because?
 
-static void DumpPatch(std::ostream& output,
-                      const Dexy::Patches::V1::Patch& patch)
+template<class PATCH, class OP, class SUB>
+static void DumpPatchCommon(std::ostream& output, const PATCH& patch)
 {
-    using namespace Dexy::Patches::V1;
+    // TODO: oops, need template params for OpParams & EnvParams
+    //////using namespace Dexy::Patches::V1;
     output << std::format("Patch,\"{}\"\n",
         TrimBlanks(std::string_view(std::begin(patch.name), std::end(patch.name))));
     output << std::format("Algorithm,{}\n", patch.algorithm + 1);
     output << std::format("Feedback,{}\n", patch.feedbackAmount);
     // Display per-operator fields in rows for readability
-    DumpOpField(output, patch, "FixedFrequency", &OpParams::fixedFreq);
+    DumpOpField(output, patch, "FixedFrequency", &OP::fixedFreq);
     // TODO: Smart display of MIDI note or frequency
-    DumpOpField(output, patch, "NoteOrFrequency", &OpParams::noteOrFreq);
-    DumpOpField(output, patch, "OutputLevel", &OpParams::outputLevel);
-    DumpOpField(output, patch, "UseEnvelope", &OpParams::useEnvelope);
-    DumpOpField(output, patch, "AmpModSens", &OpParams::ampModSens);
-    DumpOpField(output, patch, "EnvDelay", &OpParams::env, &EnvParams::delay);
-    DumpOpField(output, patch, "EnvAttack", &OpParams::env, &EnvParams::attack);
-    DumpOpField(output, patch, "EnvDecay", &OpParams::env, &EnvParams::decay);
-    DumpOpField(output, patch, "EnvSustain", &OpParams::env, &EnvParams::sustain);
-    DumpOpField(output, patch, "EnvRelease", &OpParams::env, &EnvParams::release);
-    DumpOpField(output, patch, "EnvLoop", &OpParams::env, &EnvParams::loop);
+    DumpOpField(output, patch, "NoteOrFrequency", &OP::noteOrFreq);
+    DumpOpField(output, patch, "OutputLevel", &OP::outputLevel);
+    DumpOpField(output, patch, "UseEnvelope", &OP::useEnvelope);
+    DumpOpField(output, patch, "AmpModSens", &OP::ampModSens);
+    DumpOpField(output, patch, "EnvDelay", &OP::env, &SUB::delay);
+    DumpOpField(output, patch, "EnvAttack", &OP::env, &SUB::attack);
+    DumpOpField(output, patch, "EnvDecay", &OP::env, &SUB::decay);
+    DumpOpField(output, patch, "EnvSustain", &OP::env, &SUB::sustain);
+    DumpOpField(output, patch, "EnvRelease", &OP::env, &SUB::release);
+    DumpOpField(output, patch, "EnvLoop", &OP::env, &SUB::loop);
 }
 
-static void DumpPatchBank(std::ostream& output,
-                          const Dexy::Patches::V1::PatchBank& patchBank)
+static void DumpPatch(std::ostream& output, const Dexy::Patches::V1::Patch& patch)
 {
-    DPRINT("DumpPatchBank: Dexy::Patches::V1::PatchBank");
+    DPRINT("DumpPatch V1");
+    using namespace Dexy::Patches::V1;
+    DumpPatchCommon<Patch, OpParams, EnvParams>(output, patch);
+}
+
+static void DumpPatch(std::ostream& output, const Dexy::Patches::V2::Patch& patch)
+{
+    DPRINT("DumpPatch V2");
+    using namespace Dexy::Patches::V2;
+    DumpPatchCommon<Patch, OpParams, EnvParams>(output, patch);
+    output << "TODO: DumpPatch(V2): Other fields\n";
+}
+
+// TODO: Parameterize for V1 or V2: Just make it a template
+// TODO: maybe make a concept, just because?
+template<class PATCHBANK>
+static void DumpPatchBank(std::ostream& output, const PATCHBANK& patchBank)
+{
+    DPRINT("DumpPatchBank");
     for (auto&& patch : patchBank.patches) {
         DumpPatch(output, patch);
     }
@@ -193,7 +225,7 @@ static void DumpPatchBank(std::ostream& output, int patchBank)
     output << std::format("Bogus,{:x}\n", patchBank);
 }
 
-static void DumpPatchBank(std::ostream& output, const PatchBank& patchBank)
+static void DumpPatchBankVar(std::ostream& output, const PatchBank& patchBank)
 {
     std::visit([&](auto&& obj) { DumpPatchBank(output, obj); }, patchBank);
 }
@@ -238,7 +270,7 @@ int main(int argc, char* argv[])
 
         output << std::format("Version,{}\n", version);
 
-        DumpPatchBank(output, patchBank);
+        DumpPatchBankVar(output, patchBank);
 
         return 0;
     } catch (const std::exception& ex) {
