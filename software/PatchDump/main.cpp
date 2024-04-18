@@ -164,16 +164,29 @@ static void DumpOpField(std::ostream& output, const PATCH& patch,
     output << '\n';
 }
 
-// TODO: Parameterize for V1 or V2:
-// Make this function a template, call it DumpPatchCommon, call it from
-// specialized overloads of DumpPatch
-// TODO: maybe make a concept, just because?
+template<class PATCH, class OP, class SUB>
+static void DumpOpField(std::ostream& output, const PATCH& patch,
+    std::string_view name, SUB OP::* psub,
+    Dexy::Patches::V2::ScalingCurve SUB::* pfield)
+{
+    using namespace Dexy::Patches::V2;
+    output << name;
+    for (auto&& op : patch.opParams) {
+        switch (op.*psub.*pfield) {
+        case ScalingCurve::NExp:    output << ",-Exp";  break;
+        case ScalingCurve::NLin:    output << ",-Lin";  break;
+        case ScalingCurve::None:    output << ",None";  break;
+        case ScalingCurve::Lin:     output << ",+Lin";  break;
+        case ScalingCurve::Exp:     output << ",+Exp";  break;
+        default:                    output << ",????";  break;
+        }
+    }
+    output << '\n';
+}
 
 template<class PATCH, class OP, class SUB>
 static void DumpPatchCommon(std::ostream& output, const PATCH& patch)
 {
-    // TODO: oops, need template params for OpParams & EnvParams
-    //////using namespace Dexy::Patches::V1;
     output << std::format("Patch,\"{}\"\n",
         TrimBlanks(std::string_view(std::begin(patch.name), std::end(patch.name))));
     output << std::format("Algorithm,{}\n", patch.algorithm + 1);
@@ -181,6 +194,7 @@ static void DumpPatchCommon(std::ostream& output, const PATCH& patch)
     // Display per-operator fields in rows for readability
     DumpOpField(output, patch, "FixedFrequency", &OP::fixedFreq);
     // TODO: Smart display of MIDI note or frequency
+    // Probably do that here inline because it needs two particular OpParams fields
     DumpOpField(output, patch, "NoteOrFrequency", &OP::noteOrFreq);
     DumpOpField(output, patch, "OutputLevel", &OP::outputLevel);
     DumpOpField(output, patch, "UseEnvelope", &OP::useEnvelope);
@@ -205,36 +219,21 @@ static void DumpPatch(std::ostream& output, const Dexy::Patches::V2::Patch& patc
     DPRINT("DumpPatch V2");
     using namespace Dexy::Patches::V2;
     DumpPatchCommon<Patch, OpParams, EnvParams>(output, patch);
-    output << "TODO: DumpPatch(V2): Other fields\n";
     DumpOpField(output, patch, "EnvRateScaling",
         &OpParams::env, &EnvParams::rateScaling);
     // TODO: Smart display of MIDI note or freq ratio
     DumpOpField(output, patch, "LScalBreak",
         &OpParams::levelScaling, &LevelScalingParams::breakPoint);
-    // TODO: Smart display of curve type
-    //DumpOpField(output, patch, "LScalCurveL",
-    //    &OpParams::levelScaling, &LevelScalingParams::curveLeft);
-    //DumpOpField(output, patch, "LScalCurveR",
-    //    &OpParams::levelScaling, &LevelScalingParams::curveRight);
-    {
-        output << "LScalCurveL";
-        for (auto&& op : patch.opParams) {
-            output << std::format(",{}", int(op.levelScaling.curveLeft));
-        }
-        output << '\n';
-        output << "LScalCurveR";
-        for (auto&& op : patch.opParams) {
-            output << std::format(",{}", int(op.levelScaling.curveRight));
-        }
-        output << '\n';
-    }
+    DumpOpField(output, patch, "LScalCurveL",
+        &OpParams::levelScaling, &LevelScalingParams::curveLeft);
+    DumpOpField(output, patch, "LScalCurveR",
+        &OpParams::levelScaling, &LevelScalingParams::curveRight);
     DumpOpField(output, patch, "LScalDepthL",
         &OpParams::levelScaling, &LevelScalingParams::depthLeft);
     DumpOpField(output, patch, "LScalDepthR",
         &OpParams::levelScaling, &LevelScalingParams::depthRight);
 }
 
-// TODO: maybe make a concept, just because?
 template<class PATCHBANK>
 static void DumpPatchBank(std::ostream& output, const PATCHBANK& patchBank)
 {
