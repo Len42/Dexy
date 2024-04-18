@@ -167,8 +167,8 @@ static void DumpOpField(std::ostream& output, const PATCH& patch,
 
 template<class PATCH, class OP, class SUB>
 static void DumpOpField(std::ostream& output, const PATCH& patch,
-    std::string_view name, SUB OP::* psub,
-    Dexy::Patches::V2::ScalingCurve SUB::* pfield)
+                        std::string_view name, SUB OP::* psub,
+                        Dexy::Patches::V2::ScalingCurve SUB::* pfield)
 {
     using namespace Dexy::Patches::V2;
     output << name;
@@ -230,6 +230,19 @@ static std::string NoteToString(Dexy::midiNote_t midiNote)
     } else {
         return NoteToHzString(midiNote);
     }
+}
+
+template<class PATCH, class OP, class SUB>
+static void DumpOpField(std::ostream& output, const PATCH& patch,
+                        std::string_view name, SUB OP::* psub,
+                        Dexy::midiNote_t SUB::* pfield)
+{
+    using namespace Dexy::Patches::V2;
+    output << name;
+    for (auto&& op : patch.opParams) {
+        output << std::format(",{}", NoteToString(op.*psub.*pfield));
+    }
+    output << '\n';
 }
 
 template<class PATCH, class OP, class SUB>
