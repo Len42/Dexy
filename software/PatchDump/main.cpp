@@ -117,9 +117,13 @@ static auto LoadPatchBank(auto storage)
             in(std::get<int>(patchBank)).or_throw();
             break;
         default:
-            throwError("Unrecognized patchbank version");
+            throwFileError("Unrecognized patchbank version");
         }
         DPRINT("LoadPatchBank: Read patchbank version={}", version);
+        // There should be no data left in the file
+        if (!in.remaining_data().empty()) {
+            throwFileError("Bad patch file length");
+        }
         return std::pair{ version, patchBank };
     } catch (std::system_error& ex) {
         // Improve the error messages from zpp::bits
@@ -193,7 +197,7 @@ static void DumpPatchBank(std::ostream& output, int patchBank)
     output << std::format("Bogus,{:x}\n", patchBank);
 }
 
-static void DumpPatchBank(std::ostream& output, const PatchBank& patchBank)
+static void DumpPatchBankVar(std::ostream& output, const PatchBank& patchBank)
 {
     std::visit([&](auto&& obj) { DumpPatchBank(output, obj); }, patchBank);
 }
@@ -238,7 +242,7 @@ int main(int argc, char* argv[])
 
         output << std::format("Version,{}\n", version);
 
-        DumpPatchBank(output, patchBank);
+        DumpPatchBankVar(output, patchBank);
 
         return 0;
     } catch (const std::exception& ex) {
