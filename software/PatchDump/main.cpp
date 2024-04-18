@@ -156,7 +156,7 @@ static void DumpOpField(std::ostream& output, const PATCH& patch,
     output << '\n';
 }
 
-static std::string NoteToString(Dexy::midiNote_t midiNote)
+static std::string NoteToName(Dexy::midiNote_t midiNote)
 {
     int noteNum = midiNote / 256;
     int frac = midiNote % 256;
@@ -189,9 +189,18 @@ static double NoteToHz(Dexy::midiNote_t midiNote)
     return 440 * std::exp2(((double)midiNote / 256 - 69) / 12);
 }
 
-static std::string FreqToHzString(Dexy::midiNote_t midiNote)
+static std::string NoteToHzString(Dexy::midiNote_t midiNote)
 {
     return std::format("{:.4}Hz", NoteToHz(midiNote)); // TODO: format?
+}
+
+static std::string NoteToString(Dexy::midiNote_t midiNote)
+{
+    if (midiNote >= 12 * Dexy::midiNoteSemitone) {
+        return NoteToName(midiNote);
+    } else {
+        return NoteToHzString(midiNote);
+    }
 }
 
 // TODO: Parameterize for V1 or V2.
@@ -213,11 +222,8 @@ static void DumpPatch(std::ostream& output,
     for (auto&& op : patch.opParams) {
         if (op.fixedFreq) {
             // Fixed pitch
-            Dexy::midiNote_t note = Dexy::midiNote_t(op.noteOrFreq);
-            std::string stNote = (note >= 12 * Dexy::midiNoteSemitone)
-                ? NoteToString(note)
-                : FreqToHzString(note);
-            output << std::format(",{}", stNote);
+            output << std::format(",{}",
+                NoteToString(Dexy::midiNote_t(op.noteOrFreq)));
         } else {
             // Frequency ratio
             output << std::format(",{:.4}",
