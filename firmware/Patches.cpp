@@ -12,6 +12,16 @@ static constexpr bool isGoodChar(char ch)
     return ch >= charMin;
 }
 
+constexpr bool isValid(const EnvParams& obj)
+{
+    return obj.delay <= max_param_t
+        && obj.attack <= max_param_t
+        && obj.decay <= max_param_t
+        && obj.sustain <= max_param_t
+        && obj.release <= max_param_t
+        && obj.rateScaling <= max_param_t;
+}
+
 constexpr bool isValid(const LevelScalingParams& obj)
 {
     return obj.curveLeft >= ScalingCurve::NExp && obj.curveLeft <= ScalingCurve::Exp
@@ -20,21 +30,11 @@ constexpr bool isValid(const LevelScalingParams& obj)
         && obj.depthRight <= max_param_t;
 }
 
-constexpr bool isValid(const EnvParams& obj)
-{
-    return obj.delay <= max_param_t
-        && obj.attack <= max_param_t
-        && obj.decay <= max_param_t
-        && obj.sustain <= max_param_t
-        && obj.release <= max_param_t
-        && obj.rateScaling <= max_param_t
-        && isValid(obj.levelScaling);
-}
-
 constexpr bool isValid(const OpParams& obj)
 {
     return obj.outputLevel <= max_param_t
         && obj.ampModSens <= max_param_t
+        && isValid(obj.levelScaling)
         && isValid(obj.env);
 }
 
