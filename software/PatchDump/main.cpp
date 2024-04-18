@@ -208,9 +208,6 @@ int main(int argc, char* argv[])
             PrintBanner();
         }
 
-        std::ostream& output = std::cout;
-        output << "Field,Value1,Value2,Value3,Value4,Value5,Value6\n";
-
         // Open the input file
         bool inputFromStdin = false;
         std::ifstream inFile;
@@ -230,6 +227,9 @@ int main(int argc, char* argv[])
         }
         std::istream& input = inputFromStdin ? std::cin : inFile;
         input.exceptions(std::istream::badbit); // Throw an exception on stream error
+
+        std::ostream& output = std::cout;
+        output << "Field,Value1,Value2,Value3,Value4,Value5,Value6\n";
         output << std::format("File,\"{}\"\n", inputFileName);
 
         auto storage = ReadFile(input);
