@@ -2,8 +2,6 @@
 
 #include "Dexy.h"
 
-#pragma message "Pico SDK " PICO_SDK_VERSION_STRING ", GCC " __VERSION__
-
 /// @brief Main entry point
 IN_FLASH("main")
 int main()
