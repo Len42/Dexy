@@ -228,7 +228,7 @@ static std::string NoteToString(Dexy::midiNote_t midiNote)
     if (midiNote >= 12 * Dexy::midiNoteSemitone) {
         return NoteToName(midiNote);
     } else {
-        return NoteToString(midiNote);
+        return NoteToHzString(midiNote);
     }
 }
 
