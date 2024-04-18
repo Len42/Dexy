@@ -98,10 +98,10 @@ static version_t CheckHeader(auto& in)
     in(cookie, version).or_throw();
     DPRINT("CheckHeader: cookie={:x} version={}", cookie, version);
     if (cookie != serializeCookie) {
-        throwError("Bad patch file header");
+        throwFileError("Bad patch file header");
     }
     if (version == 0 || version > versionMax) {
-        throwError("Bad patch file version");
+        throwFileError("Bad patch file version");
     }
     return version;
 }
