@@ -135,7 +135,6 @@ level_t Envelope::genNextOutput()
     // Note: Each doStageFunction() is responsible for incrementing progress.
     // That's because lookupInterpolate() takes care of it.
     (this->*doStageFunction)();
-    // TODO: level scaling - is this the place to do it?
     return level;
 }
 

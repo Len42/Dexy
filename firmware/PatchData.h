@@ -26,10 +26,10 @@ consteval Patch makeDefaultPatch()
                         .sustain = 700,
                         .release = 400,
                         .rateScaling = 0,
-                        .levelScaling{},
                         .loop = false
                     },
-                    .ampModSens = max_param_t //0
+                    .ampModSens = max_param_t, //0
+                    .levelScaling{}
                 };
     }
     // Different settings for the last carrier operator
@@ -45,10 +45,10 @@ consteval Patch makeDefaultPatch()
                     .sustain = 930,
                     .release = 400,
                     .rateScaling = 0,
-                    .levelScaling{},
                     .loop = false
                 },
-                .ampModSens = 0 // max_param_t
+                .ampModSens = 0, // max_param_t
+                .levelScaling{}
     };
     return patch;
 }
@@ -74,10 +74,10 @@ consteval Patch makeBellPatch()
                     .sustain = 0,
                     .release = 300,
                     .rateScaling = 0,
-                    .levelScaling{},
                     .loop = false
                 },
-                .ampModSens = 0
+                .ampModSens = 0,
+                .levelScaling{}
     };
     // mod
     patch.opParams[4] = OpParams{
@@ -92,10 +92,10 @@ consteval Patch makeBellPatch()
                     .sustain = 0,
                     .release = 200,
                     .rateScaling = 0,
-                    .levelScaling{},
                     .loop = false
                 },
-                .ampModSens = 0
+                .ampModSens = 0,
+                .levelScaling{}
     };
     // carrier
     patch.opParams[3] = OpParams{
@@ -110,10 +110,10 @@ consteval Patch makeBellPatch()
                     .sustain = 0,
                     .release = 300,
                     .rateScaling = 0,
-                    .levelScaling{},
                     .loop = false
                 },
-                .ampModSens = 0
+                .ampModSens = 0,
+                .levelScaling{}
     };
     // mod
     patch.opParams[2] = OpParams{
@@ -128,10 +128,10 @@ consteval Patch makeBellPatch()
                     .sustain = 0,
                     .release = 200,
                     .rateScaling = 0,
-                    .levelScaling{},
                     .loop = false
                 },
-                .ampModSens = 0
+                .ampModSens = 0,
+                .levelScaling{}
     };
     // carrier
     patch.opParams[1] = OpParams{
@@ -146,10 +146,10 @@ consteval Patch makeBellPatch()
                     .sustain = 0,
                     .release = 600,
                     .rateScaling = 0,
-                    .levelScaling{},
                     .loop = false
                 },
-                .ampModSens = 0
+                .ampModSens = 0,
+                .levelScaling{}
     };
     // mod, feedback
     patch.opParams[0] = OpParams{
@@ -164,10 +164,10 @@ consteval Patch makeBellPatch()
                     .sustain = 0,
                     .release = 910,
                     .rateScaling = 0,
-                    .levelScaling{},
                     .loop = false
                 },
-                .ampModSens = 0
+                .ampModSens = 0,
+                .levelScaling{}
     };
     return patch;
 }
@@ -193,10 +193,10 @@ consteval Patch makeTestPatch()
                         .sustain = 930,
                         .release = 400,
                         .rateScaling = 0,
-                        .levelScaling{},
                         .loop = false
                     },
-                    .ampModSens = 0
+                    .ampModSens = 0,
+                .levelScaling{}
                 };
     }
     // Different settings for the last carrier operator
@@ -212,10 +212,10 @@ consteval Patch makeTestPatch()
                     .sustain = max_param_t,
                     .release = 400,
                     .rateScaling = 0,
-                    .levelScaling{},
                     .loop = false
                 },
-                .ampModSens = 0
+                .ampModSens = 0,
+                .levelScaling{}
     };
     return patch;
 }

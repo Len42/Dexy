@@ -5,22 +5,6 @@ namespace Dexy {
 /// @brief Patch definition and storage - Version 2
 namespace Patches { namespace V2 {
 
-/// @brief Envelope level scaling curve type
-enum class ScalingCurve : signed char {
-    NExp = -2, NLin = -1, None = 0, Lin = 1, Exp = 2
-};
-
-// TODO: LevelScalingParams should be in OpParams not EnvParams
-/// @brief Envelope level scaling parameters
-struct LevelScalingParams
-{
-    midiNote_t breakPoint = 60 * midiNoteSemitone;  ///< Left-right break point
-    ScalingCurve curveLeft = ScalingCurve::None;    ///< Scaling curve to the left
-    ScalingCurve curveRight = ScalingCurve::None;   ///< Scaling curve to the right
-    param_t depthLeft = 0;                          ///< Scaling depth to the left
-    param_t depthRight = 0;                         ///< Scaling depth to the right
-};
-
 /// @brief Envelope parameters
 struct EnvParams
 {
@@ -30,8 +14,22 @@ struct EnvParams
     param_t sustain = max_param_t;      ///< Sustain level
     param_t release = 0;                ///< Release rate
     param_t rateScaling = 0;            ///< Rate scaling by pitch
-    LevelScalingParams levelScaling;    ///< Level scaling parameters
     bool loop = false;                  ///< If true, the envelope repeats indefinitely
+};
+
+/// @brief Envelope level scaling curve type
+enum class ScalingCurve : signed char {
+    NExp = -2, NLin = -1, None = 0, Lin = 1, Exp = 2
+};
+
+/// @brief Envelope level scaling parameters
+struct LevelScalingParams
+{
+    midiNote_t breakPoint = 60 * midiNoteSemitone;  ///< Left-right break point
+    ScalingCurve curveLeft = ScalingCurve::None;    ///< Scaling curve to the left
+    ScalingCurve curveRight = ScalingCurve::None;   ///< Scaling curve to the right
+    param_t depthLeft = 0;                          ///< Scaling depth to the left
+    param_t depthRight = 0;                         ///< Scaling depth to the right
 };
 
 /// @brief Operator parameters
@@ -43,6 +41,7 @@ struct OpParams
     bool useEnvelope = true;            ///< Is output level modulated by the envelope?
     EnvParams env;                      ///< Envelope parameters
     param_t ampModSens = 0;             ///< Operator sensitivity to amplitude modulation
+    LevelScalingParams levelScaling;    ///< Level scaling parameters
 };
 
 /// @brief Length of a patch's name
