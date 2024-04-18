@@ -9,6 +9,7 @@
 #include <vector>
 #include <variant>
 #include <algorithm>
+#include <cmath>
 #include <concepts>
 #include <exception>
 
@@ -184,6 +185,53 @@ static void DumpOpField(std::ostream& output, const PATCH& patch,
     output << '\n';
 }
 
+static std::string NoteToName(Dexy::midiNote_t midiNote)
+{
+    int noteNum = midiNote / 256;
+    int frac = midiNote % 256;
+    if (frac > 127) {
+        ++noteNum;
+        frac -= 256;
+    } else if (frac < -127) {
+        --noteNum;
+        frac += 256;
+    }
+    int octave = noteNum / 12 - 1;
+    int note = noteNum % 12;
+    if (note < 0) {
+        note += 12;
+    }
+    int cents = (int)((double)frac * 100 / Dexy::midiNoteSemitone);
+    static constexpr std::string_view noteNames[] = {
+      "C"sv,"C♯"sv,"D"sv,"E♭"sv,"E"sv,"F"sv,"F♯"sv,"G"sv,"G♯"sv,"A"sv,"B♭"sv,"B"sv
+    };
+    std::string_view noteName = noteNames[note];
+    if (cents == 0) {
+        return std::format("{}{}", noteName, octave);
+    } else {
+        return std::format("{}{}{:+}", noteName, octave, cents);
+    }
+}
+
+static double NoteToHz(Dexy::midiNote_t midiNote)
+{
+    return 440 * std::exp2(((double)midiNote / 256 - 69) / 12);
+}
+
+static std::string NoteToHzString(Dexy::midiNote_t midiNote)
+{
+    return std::format("{:.4}Hz", NoteToHz(midiNote)); // TODO: format?
+}
+
+static std::string NoteToString(Dexy::midiNote_t midiNote)
+{
+    if (midiNote >= 12 * Dexy::midiNoteSemitone) {
+        return NoteToName(midiNote);
+    } else {
+        return NoteToString(midiNote);
+    }
+}
+
 template<class PATCH, class OP, class SUB>
 static void DumpPatchCommon(std::ostream& output, const PATCH& patch)
 {
@@ -193,9 +241,20 @@ static void DumpPatchCommon(std::ostream& output, const PATCH& patch)
     output << std::format("Feedback,{}\n", patch.feedbackAmount);
     // Display per-operator fields in rows for readability
     DumpOpField(output, patch, "FixedFrequency", &OP::fixedFreq);
-    // TODO: Smart display of MIDI note or frequency
-    // Probably do that here inline because it needs two particular OpParams fields
-    DumpOpField(output, patch, "NoteOrFrequency", &OP::noteOrFreq);
+    // Smart display of MIDI note or frequency
+    output << "RatioOrFrequency";
+    for (auto&& op : patch.opParams) {
+        if (op.fixedFreq) {
+            // Fixed pitch
+            output << std::format(",{}",
+                NoteToString(Dexy::midiNote_t(op.noteOrFreq)));
+        } else {
+            // Frequency ratio
+            output << std::format(",{:.4}",
+                double(Dexy::freqRatio_t(op.noteOrFreq)) / Dexy::freqRatio1);
+        }
+    }
+    output << '\n';
     DumpOpField(output, patch, "OutputLevel", &OP::outputLevel);
     DumpOpField(output, patch, "UseEnvelope", &OP::useEnvelope);
     DumpOpField(output, patch, "AmpModSens", &OP::ampModSens);
