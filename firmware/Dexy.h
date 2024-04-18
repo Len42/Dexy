@@ -29,9 +29,12 @@ using namespace std::literals;
 
 #include "PicoSdk.h"
 
+#include "Version.h"
+#pragma message "Building Dexy version " DEXY_BUILD_VERSION
+#pragma message "Pico SDK " PICO_SDK_VERSION_STRING ", GCC " __VERSION__
+
 #include "Debug.h"
 #include "ShowDecl.h"
-#include "Version.h"
 
 #include "Defs.h"
 #include "Utils.h"

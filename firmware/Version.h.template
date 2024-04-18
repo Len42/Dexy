@@ -8,7 +8,7 @@ namespace VersionInfo {{
     constexpr unsigned build = {verBuild};
     constexpr char commit[] = "{verCommit}";
     constexpr bool isDevBuild = {verIsDevBuild};
-    //constexpr char name[] = "{verString}";
+    //constexpr char name[] = "{verString}"; // too long
     constexpr char name[] = "{verMajor}.{verMinor}.{verRevision}.{verBuild}";
     constexpr char nameDev[] = "{verMajor}.{verMinor}.{verRevision}.{verBuild}-dev";
     constexpr const char* getName() {{ return isDevBuild ? nameDev : name; }}
@@ -18,3 +18,6 @@ namespace VersionInfo {{
 
 // Version number for picotool
 bi_decl(bi_program_version_string(Dexy::VersionInfo::getName()))
+
+// Version number for preprocessor
+#define DEXY_BUILD_VERSION "{verString}"
