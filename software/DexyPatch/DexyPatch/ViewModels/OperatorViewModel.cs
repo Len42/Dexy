@@ -91,7 +91,7 @@ namespace Dexy.DexyPatch.ViewModels
         private void SetNoteOrFreq()
         {
             if (IsFixedFreq) {
-                int n = opParams.noteOrFreq + 32767;
+                int n = (Int16)opParams.noteOrFreq + 32767;
                 FixedCoarse = n / 512;
                 FixedFine = (n % 512) / 2 - 128;
                 RatioCoarse = 0;
