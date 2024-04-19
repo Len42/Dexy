@@ -8,9 +8,10 @@
 #include <format>
 #include <vector>
 #include <variant>
-#include <cmath>
+#include <ranges>
 #include <concepts>
 #include <exception>
+#include <cmath>
 
 // Definitions for CmdLine.h
 //#define CMDLINE_PROG_NAME "patchdump"
@@ -102,6 +103,21 @@ static version_t CheckHeader(auto& in)
     return version;
 }
 
+/// <summary>
+/// Apply a function to each operator in a patch, in display order.
+/// </summary>
+/// <remarks>
+/// Use this instead of a "for" loop because the display order for the operators
+/// is the reverse of the storage order (for historical reasons).
+/// </remarks>
+template<class PATCH, class OP>
+static void DoAllOps(std::ostream& output, const PATCH& patch, auto func)
+{
+    for (const OP& op : patch.opParams | std::views::reverse) {
+        func(output, op);
+    }
+}
+
 static auto LoadPatchBank(auto storage)
 {
     try {
@@ -139,9 +155,9 @@ static void DumpOpField(std::ostream& output, const PATCH& patch,
                         std::string_view name, auto OP::* pfield)
 {
     output << name;
-    for (auto&& op : patch.opParams) {
-        output << std::format(",{}", op.*pfield);
-    }
+    DoAllOps<PATCH, OP>(output, patch,
+        [pfield](auto&& output, auto&& op)
+            { output << std::format(",{}", op.*pfield); });
     output << '\n';
 }
 
@@ -150,9 +166,9 @@ static void DumpOpField(std::ostream& output, const PATCH& patch,
                         std::string_view name, SUB OP::* psub, auto SUB::* pfield)
 {
     output << name;
-    for (auto&& op : patch.opParams) {
-        output << std::format(",{}", op.*psub.*pfield);
-    }
+    DoAllOps<PATCH, OP>(output, patch,
+        [pfield, psub](auto&& output, auto&& op)
+            { output << std::format(",{}", op.*psub.*pfield); });
     output << '\n';
 }
 
@@ -203,10 +219,6 @@ static std::string NoteToString(Dexy::midiNote_t midiNote)
     }
 }
 
-// TODO: Parameterize for V1 or V2.
-// V2 will have its own function that calls the parameterized version
-// for the base set of params.
-
 static void DumpPatch(std::ostream& output,
                       const Dexy::Patches::V1::Patch& patch)
 {
@@ -219,17 +231,18 @@ static void DumpPatch(std::ostream& output,
     DumpOpField(output, patch, "FixedFrequency", &OpParams::fixedFreq);
     // Smart display of MIDI note or frequency
     output << "RatioOrFrequency";
-    for (auto&& op : patch.opParams) {
-        if (op.fixedFreq) {
-            // Fixed pitch
-            output << std::format(",{}",
-                NoteToString(Dexy::midiNote_t(op.noteOrFreq)));
-        } else {
-            // Frequency ratio
-            output << std::format(",{:.4}",
-                double(Dexy::freqRatio_t(op.noteOrFreq)) / Dexy::freqRatio1);
-        }
-    }
+    DoAllOps<Patch, OpParams>(output, patch,
+        [](auto&& output, auto&& op) {
+            if (op.fixedFreq) {
+                // Fixed pitch
+                output << std::format(",{}",
+                    NoteToString(Dexy::midiNote_t(op.noteOrFreq)));
+            } else {
+                // Frequency ratio
+                output << std::format(",{:.4}",
+                    double(Dexy::freqRatio_t(op.noteOrFreq)) / Dexy::freqRatio1);
+            }
+        });
     output << '\n';
     DumpOpField(output, patch, "OutputLevel", &OpParams::outputLevel);
     DumpOpField(output, patch, "UseEnvelope", &OpParams::useEnvelope);
