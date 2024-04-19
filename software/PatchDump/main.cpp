@@ -8,10 +8,11 @@
 #include <format>
 #include <vector>
 #include <variant>
+#include <ranges>
 #include <algorithm>
-#include <cmath>
 #include <concepts>
 #include <exception>
+#include <cmath>
 
 // Definitions for CmdLine.h
 //#define CMDLINE_PROG_NAME "patchdump"
@@ -107,6 +108,21 @@ static version_t CheckHeader(auto& in)
     return version;
 }
 
+/// <summary>
+/// Apply a function to each operator in a patch, in display order.
+/// </summary>
+/// <remarks>
+/// Use this instead of a "for" loop because the display order for the operators
+/// is the reverse of the storage order (for historical reasons).
+/// </remarks>
+template<class PATCH, class OP>
+static void DoAllOps(std::ostream& output, const PATCH& patch, auto func)
+{
+    for (const OP& op : patch.opParams | std::views::reverse) {
+        func(output, op);
+    }
+}
+
 static auto LoadPatchBank(auto storage)
 {
     try {
@@ -148,9 +164,9 @@ static void DumpOpField(std::ostream& output, const PATCH& patch,
                         std::string_view name, auto OP::* pfield)
 {
     output << name;
-    for (auto&& op : patch.opParams) {
-        output << std::format(",{}", op.*pfield);
-    }
+    DoAllOps<PATCH, OP>(output, patch,
+        [pfield](auto&& output, auto&& op)
+            { output << std::format(",{}", op.*pfield); });
     output << '\n';
 }
 
@@ -159,9 +175,9 @@ static void DumpOpField(std::ostream& output, const PATCH& patch,
                         std::string_view name, SUB OP::* psub, auto SUB::* pfield)
 {
     output << name;
-    for (auto&& op : patch.opParams) {
-        output << std::format(",{}", op.*psub.*pfield);
-    }
+    DoAllOps<PATCH, OP>(output, patch,
+        [pfield, psub](auto&& output, auto&& op)
+            { output << std::format(",{}", op.*psub.*pfield); });
     output << '\n';
 }
 
@@ -172,16 +188,17 @@ static void DumpOpField(std::ostream& output, const PATCH& patch,
 {
     using namespace Dexy::Patches::V2;
     output << name;
-    for (auto&& op : patch.opParams) {
-        switch (op.*psub.*pfield) {
-        case ScalingCurve::NExp:    output << ",-Exp";  break;
-        case ScalingCurve::NLin:    output << ",-Lin";  break;
-        case ScalingCurve::None:    output << ",None";  break;
-        case ScalingCurve::Lin:     output << ",+Lin";  break;
-        case ScalingCurve::Exp:     output << ",+Exp";  break;
-        default:                    output << ",????";  break;
-        }
-    }
+    DoAllOps<PATCH, OP>(output, patch,
+        [pfield, psub](auto&& output, auto&& op) {
+            switch (op.*psub.*pfield) {
+            case ScalingCurve::NExp:    output << ",-Exp";  break;
+            case ScalingCurve::NLin:    output << ",-Lin";  break;
+            case ScalingCurve::None:    output << ",None";  break;
+            case ScalingCurve::Lin:     output << ",+Lin";  break;
+            case ScalingCurve::Exp:     output << ",+Exp";  break;
+            default:                    output << ",????";  break;
+            }
+        });
     output << '\n';
 }
 
@@ -239,9 +256,9 @@ static void DumpOpField(std::ostream& output, const PATCH& patch,
 {
     using namespace Dexy::Patches::V2;
     output << name;
-    for (auto&& op : patch.opParams) {
-        output << std::format(",{}", NoteToString(op.*psub.*pfield));
-    }
+    DoAllOps<PATCH, OP>(output, patch,
+        [pfield, psub](auto&& output, auto&& op)
+            { output << std::format(",{}", NoteToString(op.*psub.*pfield)); });
     output << '\n';
 }
 
@@ -256,7 +273,8 @@ static void DumpPatchCommon(std::ostream& output, const PATCH& patch)
     DumpOpField(output, patch, "FixedFrequency", &OP::fixedFreq);
     // Smart display of MIDI note or frequency
     output << "RatioOrFrequency";
-    for (auto&& op : patch.opParams) {
+    DoAllOps<PATCH, OP>(output, patch,
+        [](auto&& output, auto&& op) {
         if (op.fixedFreq) {
             // Fixed pitch
             output << std::format(",{}",
@@ -266,7 +284,7 @@ static void DumpPatchCommon(std::ostream& output, const PATCH& patch)
             output << std::format(",{:.4}",
                 double(Dexy::freqRatio_t(op.noteOrFreq)) / Dexy::freqRatio1);
         }
-    }
+        });
     output << '\n';
     DumpOpField(output, patch, "OutputLevel", &OP::outputLevel);
     DumpOpField(output, patch, "UseEnvelope", &OP::useEnvelope);
