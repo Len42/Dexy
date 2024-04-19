@@ -26,7 +26,6 @@ void Operator::setNotePitch(phase_t pitch)
         uint64_t temp = uint64_t(pitch) * uint64_t(freqRatio);
         pitch = phase_t(temp >> 11);
         setFrequency(pitch);
-        // TODO: Keyboard (pitch) level scaling - per-op break, curve, amount; see Complete DX7
     }
 }
 
@@ -67,7 +66,6 @@ output_t Operator::genNextOutput(output_t freqMod, output_t ampMod)
     // Apply envelope to amplitude
     if (useEnvelope) {
         output = adjustOutputLevel(output, env.genNextOutput());
-        // TODO: level scaling - is this the place to do it?
     }
     // Apply amplitude modulation
     level_t level = max_level_t;
@@ -76,6 +74,7 @@ output_t Operator::genNextOutput(output_t freqMod, output_t ampMod)
     output = adjustOutputLevel(output, level);
     // Apply operator output level
     output = adjustOutputLevel(output, outputLevel);
+    // TODO: keyboard level scaling - is this the place to do it?
     return output;
 }
 

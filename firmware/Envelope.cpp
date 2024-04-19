@@ -112,7 +112,7 @@ void Envelope::setParams(const Patches::EnvParams& params)
     decay = decayRateFromParam(params.decay);
     sustain = Operator::levelFromParam(params.sustain);
     release = decayRateFromParam(params.release);
-    // TODO: Keyboard (pitch) rate scaling based on params.rateScaling
+    // TODO: Keyboard rate scaling based on params.rateScaling
     loop = params.loop;
 }
 
