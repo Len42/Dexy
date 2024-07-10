@@ -132,52 +132,13 @@ private:
     const std::array<Task*, NUMTASKS> tasks;
 };
 
-/// @brief Add a task to a std::array of Task*
-/// @tparam NUMTASKS 
-/// @param taskList 
-/// @param ptask 
-/// @return 
-template<size_t NUMTASKS>
-consteval auto addTask(const std::array<Task*, NUMTASKS>& taskList, Task* ptask)
-{
-    std::array<Task*, NUMTASKS+1> newList;
-    std::ranges::copy(taskList, std::begin(newList));
-    newList[NUMTASKS] = ptask;
-    return newList;
-}
-
-/// @brief Helper for makeTaskList()
-/// @tparam NUMTASKS 
-/// @param std::array of Task*
-/// @return std::array of Task*
-template<size_t NUMTASKS>
-consteval auto makeTaskListHelper(const std::array<Task*, NUMTASKS>& taskList)
-{
-    return taskList;
-}
-
-/// @brief Helper for makeTaskList()
-/// @tparam NUMTASKS 
-/// @tparam TASK_T 
-/// @tparam ...OTHER_TASKS 
-/// @param taskList std::array of Task*
-/// @return std::array of Task*
-template<size_t NUMTASKS, class TASK_T, class... OTHER_TASKS>
-consteval auto makeTaskListHelper(const std::array<Task*, NUMTASKS>& taskList)
-{
-    std::array<Task*, NUMTASKS+1> newList = addTask(taskList, &taskInstance<TASK_T>);
-    return makeTaskListHelper<NUMTASKS+1, OTHER_TASKS...>(newList);
-}
-
-/// @brief Make a TaskList which is a compile-time constant containing the given
-/// list of Task subclasses
-/// @tparam ...TASKS A list of subclasses of Task
-/// @return TaskList
-template <class... TASKS>
+template<typename... TASKS>
 consteval auto makeTaskList()
 {
-    auto taskList = makeTaskListHelper<0, TASKS...>(std::array<Task*, 0>{});
-    return TaskList(taskList);
+    std::array<Task*, sizeof...(TASKS)> tasks{};
+    int i = 0;
+    ((tasks[i++] = &taskInstance<TASKS>), ...);
+    return TaskList(tasks);
 }
 
 } } // namespace Tasks
