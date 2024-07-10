@@ -135,10 +135,11 @@ private:
 template<typename... TASKS>
 consteval auto makeTaskList()
 {
-    std::array<Task*, sizeof...(TASKS)> tasks{};
+    constexpr size_t numTasks = sizeof...(TASKS);
+    std::array<Task*, numTasks> tasks{};
     int i = 0;
     ((tasks[i++] = &taskInstance<TASKS>), ...);
-    return TaskList(tasks);
+    return TaskList<numTasks>(tasks);
 }
 
 } } // namespace Tasks
