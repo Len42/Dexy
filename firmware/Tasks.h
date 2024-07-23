@@ -35,15 +35,15 @@ namespace Dexy {
 ///     }
 /// };
 /// @endcode
-/// 2. Make a list of all the tasks by calling Tasks::makeTaskList.
+/// 2. Make a list of all the tasks by declaring a Tasks::TaskList.
 /// Any tasks not currently required (e.g. for debugging) can be commented out
 /// and the unused task code will not be compiled into the executable.
 /// @code
-/// constexpr auto taskList = Tasks::makeTaskList<
+/// constexpr Tasks::TaskList<
 ///     ExampleTask,
 ///     AnotherTask,
 ///     AndAnotherTask
-/// >();
+/// > taskList;
 /// @endcode
 /// 3. In main(), initialize all the tasks and then execute them repeatedly.
 /// @code
@@ -64,6 +64,7 @@ namespace Dexy {
 /// Acknowledgements
 /// ----------------
 /// Thanks to Luke Valenty for the slideware: https://youtu.be/fk0ihqOXER8
+
 namespace Tasks {
 
 /// @brief  Base class for application-defined tasks
@@ -101,12 +102,16 @@ template<typename TASK_T>
 static TASK_T taskInstance;
 
 /// @brief A static list of Task that is initialized at compile time
-/// @tparam NUMTASKS The number of Task subclasses that have been declared
-template<size_t NUMTASKS = 0>
+/// @tparam ...TASKS List of Task subclasses
+template<typename... TASKS>
 class TaskList
 {
 public:
-    consteval TaskList(const std::array<Task*, NUMTASKS>& _tasks) : tasks(_tasks) { }
+    consteval TaskList()
+    {
+        int i = 0;
+        ((tasks[i++] = &taskInstance<TASKS>), ...);
+    }
 
     /// @brief Initialize all the tasks
     IN_FLASH("Tasks")
@@ -129,17 +134,7 @@ public:
 
 private:
     /// @brief List of Task instances to be executed
-    const std::array<Task*, NUMTASKS> tasks;
+    Task* tasks[sizeof...(TASKS)];
 };
-
-template<typename... TASKS>
-consteval auto makeTaskList()
-{
-    constexpr size_t numTasks = sizeof...(TASKS);
-    std::array<Task*, numTasks> tasks{};
-    int i = 0;
-    ((tasks[i++] = &taskInstance<TASKS>), ...);
-    return TaskList<numTasks>(tasks);
-}
 
 } } // namespace Tasks
