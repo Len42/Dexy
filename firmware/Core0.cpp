@@ -19,7 +19,7 @@ public:
 /// @details Any tasks not currently required (e.g. for debugging) can be commented out.
 /// @see Tasks::TaskList
 IN_FLASH("taskList")
-static constexpr auto taskList = Tasks::makeTaskList<
+static constexpr Tasks::TaskList<
     ReportErrorsTask,
     //TestTasks::OutputAdc,
     //TestTasks::PitchCv,
@@ -29,7 +29,7 @@ static constexpr auto taskList = Tasks::makeTaskList<
     SerialIO::SerialIOTask,
     UI::UITask,
     Watchdog // should be last
->();
+> taskList;
 
 // main
 
