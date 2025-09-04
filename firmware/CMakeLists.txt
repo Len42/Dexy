@@ -28,6 +28,7 @@ add_executable(Dexy ${PROJ_CPP_FILES} ssd1306.c)
 pico_set_program_name(Dexy "Dexy")
 #pico_set_program_version(Dexy "0.0") # No - this will be set by MakeVersionFile & Dexy
 
+# Locate python
 set(CMD_PYTHON "py") # for Windows
 #set(CMD_PYTHON "/usr/local/bin/python3.11") # for macOS, Linux
 
